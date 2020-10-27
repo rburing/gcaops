@@ -1,4 +1,14 @@
+from collections import defaultdict
 from collections.abc import Iterable
+from itertools import combinations
+
+class keydefaultdict(defaultdict):
+    def __missing__(self, key):
+        if self.default_factory is None:
+            raise KeyError(key)
+        else:
+            ret = self[key] = self.default_factory(key)
+            return ret
 
 class Superfunction:
     """
@@ -18,6 +28,28 @@ class Superfunction:
         """
         self._parent = parent
         self._monomial_coefficients = monomial_coefficients
+
+    def __repr__(self):
+        """
+        Return a string representation of ``self``.
+        """
+        terms = []
+        for degree, coefficients in self._monomial_coefficients.items():
+            for k, coefficient in enumerate(coefficients):
+                c = repr(coefficient)
+                if c == '0':
+                    continue
+                elif c == '1' and degree > 0: # mainly for generators and basis
+                    term = self._parent._repr_monomial(degree, k)
+                elif degree == 0:
+                    term = '({})'.format(c)
+                else:
+                    term = '({})*{}'.format(c, self._parent._repr_monomial(degree, k))
+                terms.append(term)
+        if terms:
+            return ' + '.join(terms)
+        else:
+            return '0'
 
 class SuperfunctionAlgebra:
     """
@@ -61,6 +93,7 @@ class SuperfunctionAlgebra:
         self._names = tuple(names)
         self.__ngens = len(names)
         self._gens = tuple(self.element_class(self, {1 : [1 if j == k else 0 for j in range(self.__ngens)]}) for k in range(self.__ngens))
+        self._basis = keydefaultdict(lambda degree: list(combinations(range(self.__ngens), degree)))
 
     def _first_ngens(self, n):
         """
@@ -73,3 +106,15 @@ class SuperfunctionAlgebra:
         Return the tuple of odd coordinates of ``self``.
         """
         return self._gens
+
+    def _repr_monomial(self, degree, index):
+        """
+        Return a string representation of the respective monomial in the odd coordinates.
+
+        INPUT:
+
+        - ``degree`` -- a natural number, the degree of the monomial
+
+        - ``index`` -- a natural number, the index of the monomial in the basis
+        """
+        return '*'.join(self._names[i] for i in self._basis[degree][index])
