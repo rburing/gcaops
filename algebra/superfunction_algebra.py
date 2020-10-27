@@ -31,7 +31,9 @@ class Superfunction:
         self._parent = parent
         if not isinstance(monomial_coefficients, MutableMapping):
             raise TypeError('monomial_coefficients must be a dictionary')
-        self._monomial_coefficients = monomial_coefficients
+        self._monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
+        for degree in monomial_coefficients:
+            self._monomial_coefficients[degree] = monomial_coefficients[degree]
 
     def __repr__(self):
         """
@@ -54,6 +56,121 @@ class Superfunction:
             return ' + '.join(terms)
         else:
             return '0'
+
+    def __pos__(self):
+        """
+        Return the positive of ``self`` (that is, just a copy).
+        """
+        monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
+        for degree in self._monomial_coefficients:
+            for k in range(len(self._monomial_coefficients[degree])):
+                monomial_coefficients[degree][k] = self._monomial_coefficients[degree][k]
+        return self.__class__(self._parent, monomial_coefficients)
+
+    def __neg__(self):
+        """
+        Return the negative of ``self``.
+        """
+        monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
+        for degree in self._monomial_coefficients:
+            for k in range(len(self._monomial_coefficients[degree])):
+                monomial_coefficients[degree][k] = -self._monomial_coefficients[degree][k]
+        return self.__class__(self._parent, monomial_coefficients)
+
+    def __add__(self, other):
+        """
+        Return ``self`` added to ``other``.
+        """
+        monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
+        for degree in self._monomial_coefficients:
+            for k in range(len(self._monomial_coefficients[degree])):
+                monomial_coefficients[degree][k] = self._monomial_coefficients[degree][k]
+        if other in self._parent.base_ring():
+            monomial_coefficients[0][0] += other
+        elif isinstance(other, self.__class__):
+            for degree in other._monomial_coefficients:
+                for k in range(len(other._monomial_coefficients[degree])):
+                    monomial_coefficients[degree][k] += other._monomial_coefficients[degree][k]
+        else:
+            raise NotImplementedError
+        return self.__class__(self._parent, monomial_coefficients)
+
+    def __radd__(self, other):
+        """
+        Return ``other`` added to ``self``.
+        """
+        return self + other
+
+    def __sub__(self, other):
+        """
+        Return ``self`` minus ``other``.
+        """
+        monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
+        for degree in self._monomial_coefficients:
+            for k in range(len(self._monomial_coefficients[degree])):
+                monomial_coefficients[degree][k] = self._monomial_coefficients[degree][k]
+        if other in self._parent.base_ring():
+            monomial_coefficients[0][0] -= other
+        elif isinstance(other, self.__class__):
+            for degree in other._monomial_coefficients:
+                for k in range(len(other._monomial_coefficients[degree])):
+                    monomial_coefficients[degree][k] -= other._monomial_coefficients[degree][k]
+        else:
+            raise NotImplementedError
+        return self.__class__(self._parent, monomial_coefficients)
+
+    def __rsub__(self, other):
+        """
+        Return ``other`` minus ``self``.
+        """
+        return -(self - other)
+
+    def __mul__(self, other):
+        """
+        Return ``self`` multiplied by ``other``.
+        """
+        monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
+        if other in self._parent.base_ring():
+            for degree in self._monomial_coefficients:
+                for k in range(len(self._monomial_coefficients[degree])):
+                    monomial_coefficients[degree][k] = self._monomial_coefficients[degree][k] * other
+        elif isinstance(other, self.__class__):
+            for degree1 in self._monomial_coefficients:
+                for k1 in range(len(self._monomial_coefficients[degree1])):
+                    if self._monomial_coefficients[degree1][k1] == 0:
+                        continue
+                    for degree2 in other._monomial_coefficients:
+                        for k2 in range(len(other._monomial_coefficients[degree2])):
+                            if other._monomial_coefficients[degree2][k2] == 0:
+                                continue
+                            prod, sign = self._parent._mul_on_basis(degree1,k1,degree2,k2)
+                            if prod is not None:
+                                monomial_coefficients[degree1+degree2][prod] += sign * self._monomial_coefficients[degree1][k1] * other._monomial_coefficients[degree2][k2]
+        else:
+            raise NotImplementedError
+        return self.__class__(self._parent, monomial_coefficients)
+
+    def __rmul__(self, other):
+        """
+        Return ``other`` multiplied by ``self``.
+
+        NOTE::
+
+            This assumes that ``other`` commutes with ``self``.
+            It is justified because this function only gets called when ``other`` is even.
+        """
+        return self * other
+
+    def __eq__(self, other):
+        """
+        Return ``True`` if ``self`` equals ``other`` and ``False`` otherwise.
+        """
+        difference = self - other
+        for degree in difference._monomial_coefficients:
+            for k in range(len(difference._monomial_coefficients[degree])):
+                if difference._monomial_coefficients[degree] != 0:
+                    return False
+        return True
 
 class SuperfunctionAlgebra:
     """
@@ -99,6 +216,18 @@ class SuperfunctionAlgebra:
         self._gens = tuple(self.element_class(self, {1 : [1 if j == k else 0 for j in range(self.__ngens)]}) for k in range(self.__ngens))
         self._basis = keydefaultdict(lambda degree: list(combinations(range(self.__ngens), degree)))
 
+    def base_ring(self):
+        """
+        Return the base ring of ``self``, consisting of (even, degree 0) functions.
+        """
+        return self._base_ring
+
+    def ngens(self):
+        """
+        Return the number of odd coordinates of ``self``.
+        """
+        return self.__ngens
+
     def _first_ngens(self, n):
         """
         Return the first ``n`` odd coordinates of ``self``.
@@ -122,3 +251,37 @@ class SuperfunctionAlgebra:
         - ``index`` -- a natural number, the index of the monomial in the basis
         """
         return '*'.join(self._names[i] for i in self._basis[degree][index])
+
+    def dimension(self, degree):
+        """
+        Return the dimension of the graded component spanned by monomials of the given ``degree`` in the odd coordinates (as a module over the base ring).
+
+        INPUT:
+
+        - ``degree`` -- a natural number
+        """
+        return len(self._basis[degree])
+
+    def _mul_on_basis(self, degree1, k1, degree2, k2):
+        """
+        Return the index and the sign of the monomial that results from multiplying the ``k1``th monomial of degree ``degree1`` by the ``k2``th monomial of degree ``degree2``.
+        """
+        if degree1 + degree2 > self.__ngens:
+            return None, 1
+        left = self._basis[degree1][k1]
+        right = self._basis[degree2][k2]
+        lst = list(left+right)
+        # selection sort
+        sign = 1
+        for i in range(0, len(lst)-1):
+            j = min(range(i, len(lst)), key=lst.__getitem__)
+            if i != j:
+                lst[i],lst[j] = lst[j],lst[i]
+                sign *= -1
+        # detect repetitions in sorted list
+        for i in range(0, len(lst)-1):
+            if lst[i] == lst[i+1]:
+                return None, 1
+        prod = tuple(lst)
+        assert prod in self._basis[degree1+degree2]
+        return self._basis[degree1+degree2].index(prod), sign
