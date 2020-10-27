@@ -1,5 +1,5 @@
 from collections import defaultdict
-from collections.abc import Iterable
+from collections.abc import Iterable, MutableMapping
 from itertools import combinations
 
 class keydefaultdict(defaultdict):
@@ -26,7 +26,11 @@ class Superfunction:
 
         - ``monomial_coefficients`` - a dictionary, taking a natural number ``d`` to a list of coefficients of the monomials of degree ``d`` in the ordered basis of ``parent``
         """
+        if not isinstance(parent, SuperfunctionAlgebra):
+            raise TypeError('parent must be a SuperfunctionAlgebra')
         self._parent = parent
+        if not isinstance(monomial_coefficients, MutableMapping):
+            raise TypeError('monomial_coefficients must be a dictionary')
         self._monomial_coefficients = monomial_coefficients
 
     def __repr__(self):
