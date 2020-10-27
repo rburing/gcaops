@@ -40,8 +40,8 @@ class Superfunction:
         Return a string representation of ``self``.
         """
         terms = []
-        for degree, coefficients in self._monomial_coefficients.items():
-            for k, coefficient in enumerate(coefficients):
+        for degree in reversed(sorted(self._monomial_coefficients.keys())):
+            for k, coefficient in enumerate(self._monomial_coefficients[degree]):
                 c = repr(coefficient)
                 if c == '0':
                     continue
