@@ -66,6 +66,16 @@ class Superfunction:
         else:
             return '0'
 
+    def homogeneous_part(self, degree):
+        """
+        Return the homogeneous part of ``self`` of total degree ``degree`` in the odd coordinates.
+
+        NOTE::
+
+            Returns a Superfunction whose homogeneous component of degree ``degree`` is a *reference* to the respective component of ``self``.
+        """
+        return self.__class__(self._parent, { degree : self._monomial_coefficients[degree] })
+
     def map_coefficients(self, f):
         """
         """
@@ -212,6 +222,17 @@ class Superfunction:
             return self.__class__(self._parent, monomial_coefficients)
         else:
             raise ValueError("Don't know how to take derivative with respect to {}".format(args))
+
+    def bracket(self, other):
+        """
+        Return the Schouten bracket (odd Poisson bracket) of ``self`` with ``other``.
+        """
+        if len(self._monomial_coefficients.keys()) == 1: # first argument is homogeneous
+            degree = next(iter(self._monomial_coefficients))
+            sign = 1 if degree % 2 == 0 else -1
+            return sum(self.derivative(self._parent.even_coordinate(i))*other.derivative(self._parent.gen(i)) + sign*self.derivative(self._parent.gen(i))*other.derivative(self._parent.even_coordinate(i)) for i in range(self._parent.ngens()))
+        else:
+            return sum(self.homogeneous_part(d).bracket(other) for d in self._monomial_coefficients.keys())
 
 class SuperfunctionAlgebra:
     """
