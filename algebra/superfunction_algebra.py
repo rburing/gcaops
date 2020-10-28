@@ -10,6 +10,15 @@ class keydefaultdict(defaultdict):
             ret = self[key] = self.default_factory(key)
             return ret
 
+def selection_sort(lst):
+    sign = 1
+    for i in range(0, len(lst)-1):
+        j = min(range(i, len(lst)), key=lst.__getitem__)
+        if i != j:
+            lst[i],lst[j] = lst[j],lst[i]
+            sign *= -1
+    return sign
+
 class Superfunction:
     """
     Superfunction on a coordinate chart of a Z_2-graded space.
@@ -172,6 +181,37 @@ class Superfunction:
                     return False
         return True
 
+    def derivative(self, *args):
+        """
+        Return the derivative of ``self`` with respect to ``args``.
+
+        INPUT:
+
+        - ``args`` -- an odd coordinate or an even coordinate, or a list of such
+        """
+        if len(args) > 1:
+            result = self
+            for arg in args:
+                result = result.derivative(arg)
+            return result
+        elif len(args) == 1 and args[0] in self._parent.gens():
+            j = self._parent.gens().index(args[0])
+            monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
+            for degree in self._monomial_coefficients:
+                for k in range(len(self._monomial_coefficients[degree])):
+                    derivative, sign = self._parent._derivative_on_basis(degree, k, j)
+                    if derivative is not None:
+                        monomial_coefficients[degree-1][derivative] = sign * self._monomial_coefficients[degree][k]
+            return self.__class__(self._parent, monomial_coefficients)
+        elif len(args) == 1 and args[0] in self._parent.even_coordinates():
+            monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
+            for degree in self._monomial_coefficients:
+                for k in range(len(self._monomial_coefficients[degree])):
+                    monomial_coefficients[degree][k] = self._monomial_coefficients[degree][k].derivative(args[0])
+            return self.__class__(self._parent, monomial_coefficients)
+        else:
+            raise ValueError("Don't know how to take derivative with respect to {}".format(args))
+
 class SuperfunctionAlgebra:
     """
     Supercommutative algebra of superfunctions on a coordinate chart of a Z_2-graded space.
@@ -222,6 +262,18 @@ class SuperfunctionAlgebra:
         """
         return self._base_ring
 
+    def even_coordinates(self):
+        """
+        Return the even coordinates in the base ring of ``self``.
+        """
+        return self._even_coordinates
+
+    def even_coordinate(self, i):
+        """
+        Return the ``i``th even coordinate in the base ring of ``self``.
+        """
+        return self._even_coordinates[i]
+
     def ngens(self):
         """
         Return the number of odd coordinates of ``self``.
@@ -239,6 +291,12 @@ class SuperfunctionAlgebra:
         Return the tuple of odd coordinates of ``self``.
         """
         return self._gens
+
+    def gen(self, i):
+        """
+        Return the ``i``th odd coordinate of ``self``.
+        """
+        return self._gens[i]
 
     def _repr_monomial(self, degree, index):
         """
@@ -271,13 +329,7 @@ class SuperfunctionAlgebra:
         left = self._basis[degree1][k1]
         right = self._basis[degree2][k2]
         lst = list(left+right)
-        # selection sort
-        sign = 1
-        for i in range(0, len(lst)-1):
-            j = min(range(i, len(lst)), key=lst.__getitem__)
-            if i != j:
-                lst[i],lst[j] = lst[j],lst[i]
-                sign *= -1
+        sign = selection_sort(lst)
         # detect repetitions in sorted list
         for i in range(0, len(lst)-1):
             if lst[i] == lst[i+1]:
@@ -285,3 +337,18 @@ class SuperfunctionAlgebra:
         prod = tuple(lst)
         assert prod in self._basis[degree1+degree2]
         return self._basis[degree1+degree2].index(prod), sign
+
+    def _derivative_on_basis(self, degree, i, j):
+        """
+        Return the index and the sign of the derivative of the ``i``th monomial of degree ``degree`` in the basis, with respect to the ``j``th odd coordinate.
+        """
+        monomial = self._basis[degree][i]
+        if not j in monomial:
+            return None, 1
+        lst = list(monomial)
+        sign = 1 if lst.index(j) % 2 == 0 else -1
+        lst.remove(j) # remove first instance
+        sign *= selection_sort(lst)
+        derivative = tuple(lst)
+        assert derivative in self._basis[degree-1]
+        return self._basis[degree-1].index(derivative), sign
