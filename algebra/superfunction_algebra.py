@@ -213,7 +213,7 @@ class SuperfunctionAlgebra:
             raise ValueError("Number of odd coordinate names in {} does not match number of even coordinates".format(names))
         self._names = tuple(names)
         self.__ngens = len(names)
-        self._gens = tuple(self.element_class(self, {1 : [1 if j == k else 0 for j in range(self.__ngens)]}) for k in range(self.__ngens))
+        self._gens = tuple(self.element_class(self, {1 : [self._base_ring.one() if j == k else self._base_ring.zero() for j in range(self.__ngens)]}) for k in range(self.__ngens))
         self._basis = keydefaultdict(lambda degree: list(combinations(range(self.__ngens), degree)))
 
     def base_ring(self):
