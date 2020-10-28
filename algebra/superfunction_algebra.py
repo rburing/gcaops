@@ -66,25 +66,26 @@ class Superfunction:
         else:
             return '0'
 
-    def __pos__(self):
+    def map_coefficients(self, f):
         """
-        Return the positive of ``self`` (that is, just a copy).
         """
         monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
         for degree in self._monomial_coefficients:
             for k in range(len(self._monomial_coefficients[degree])):
-                monomial_coefficients[degree][k] = self._monomial_coefficients[degree][k]
+                monomial_coefficients[degree][k] = f(self._monomial_coefficients[degree][k])
         return self.__class__(self._parent, monomial_coefficients)
+
+    def __pos__(self):
+        """
+        Return the positive of ``self`` (that is, just a copy).
+        """
+        return self.map_coefficients(lambda c: c)
 
     def __neg__(self):
         """
         Return the negative of ``self``.
         """
-        monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
-        for degree in self._monomial_coefficients:
-            for k in range(len(self._monomial_coefficients[degree])):
-                monomial_coefficients[degree][k] = -self._monomial_coefficients[degree][k]
-        return self.__class__(self._parent, monomial_coefficients)
+        return self.map_coefficients(lambda c: -c)
 
     def __add__(self, other):
         """
