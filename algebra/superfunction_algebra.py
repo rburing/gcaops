@@ -1,6 +1,7 @@
 from collections import defaultdict
 from collections.abc import Iterable, MutableMapping
 from itertools import combinations
+from util.permutation import selection_sort
 
 class keydefaultdict(defaultdict):
     def __missing__(self, key):
@@ -9,15 +10,6 @@ class keydefaultdict(defaultdict):
         else:
             ret = self[key] = self.default_factory(key)
             return ret
-
-def selection_sort(lst):
-    sign = 1
-    for i in range(0, len(lst)-1):
-        j = min(range(i, len(lst)), key=lst.__getitem__)
-        if i != j:
-            lst[i],lst[j] = lst[j],lst[i]
-            sign *= -1
-    return sign
 
 class Superfunction:
     """
