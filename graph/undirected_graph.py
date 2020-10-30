@@ -35,6 +35,12 @@ class UndirectedGraph:
         """
         return 'UndirectedGraph({}, {})'.format(self._num_vertices, self._edges)
 
+    def edges(self):
+        """
+        Return the list of edges of ``self``.
+        """
+        return self._edges
+
     def canonicalize_edges(self):
         """
         Lexicographically order the edges of ``self`` and return the sign of that edge permutation.
