@@ -291,7 +291,7 @@ class SuperfunctionAlgebra:
         elif isinstance(arg, self.element_class) and arg.parent() == self:
             return arg
         else:
-            raise ValueError('cannot convert {} into element'.format(arg))
+            raise ValueError('cannot convert {} into element of {}'.format(arg, self))
 
     def base_ring(self):
         """
