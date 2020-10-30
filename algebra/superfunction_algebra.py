@@ -58,6 +58,12 @@ class Superfunction:
         else:
             return '0'
 
+    def parent(self):
+        """
+        Return the parent SuperfunctionAlgebra that ``self`` belongs to.
+        """
+        return self._parent
+
     def homogeneous_part(self, degree):
         """
         Return the homogeneous part of ``self`` of total degree ``degree`` in the odd coordinates.
