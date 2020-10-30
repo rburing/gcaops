@@ -270,6 +270,12 @@ class SuperfunctionAlgebra:
         self._gens = tuple(self.element_class(self, {1 : [self._base_ring.one() if j == k else self._base_ring.zero() for j in range(self.__ngens)]}) for k in range(self.__ngens))
         self._basis = keydefaultdict(lambda degree: list(combinations(range(self.__ngens), degree)))
 
+    def __repr__(self):
+        """
+        Return a string representation of ``self``.
+        """
+        return "Superfunction algebra over {} with even coordinates {} and odd coordinates {}".format(self._base_ring, self._even_coordinates, self._gens)
+
     def base_ring(self):
         """
         Return the base ring of ``self``, consisting of (even, degree 0) functions.
