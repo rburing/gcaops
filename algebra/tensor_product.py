@@ -36,6 +36,12 @@ class TensorProductElement:
         """
         return self._parent
 
+    def terms(self):
+        """
+        Return the list of terms of ``self``.
+        """
+        return self._terms
+
 class TensorProduct:
     """
     Tensor product of vector spaces.
