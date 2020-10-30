@@ -192,6 +192,16 @@ class Superfunction:
                     return False
         return True
 
+    def degree(self):
+        """
+        Return the degree of ``self`` as a polynomial in the odd coordinates.
+        """
+        for d in reversed(sorted(self._monomial_coefficients.keys())):
+            for k in range(len(self._monomial_coefficients[d])):
+                if self._monomial_coefficients[d] != self._parent.base_ring().zero():
+                    return d
+        return 0
+
     def derivative(self, *args):
         """
         Return the derivative of ``self`` with respect to ``args``.
