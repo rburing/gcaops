@@ -20,7 +20,7 @@ class TensorProductElement:
                     for m in range(len(terms[n])):
                         self._terms[n][m] = self._parent.factor(m)(terms[n][m]) # conversion
             else:
-                raise ValueError('each list in terms must be of length {}'.format(len(self._factors)))
+                raise ValueError('each list in terms must be of length {}'.format(self._parent.nfactors()))
         else:
             raise ValueError('terms must be a list of lists')
 
