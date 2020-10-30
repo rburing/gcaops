@@ -221,6 +221,8 @@ class Superfunction:
         else:
             raise ValueError("Don't know how to take derivative with respect to {}".format(args))
 
+    diff = derivative
+
     def bracket(self, other):
         """
         Return the Schouten bracket (odd Poisson bracket) of ``self`` with ``other``.
@@ -329,11 +331,15 @@ class SuperfunctionAlgebra:
         """
         return self._gens
 
+    odd_coordinates = gens
+
     def gen(self, i):
         """
         Return the ``i``th odd coordinate of ``self``.
         """
         return self._gens[i]
+
+    odd_coordinate = gen
 
     def _repr_monomial(self, degree, index):
         """
