@@ -35,6 +35,8 @@ class Superfunction:
         self._monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
         for degree in monomial_coefficients:
             self._monomial_coefficients[degree] = monomial_coefficients[degree]
+            for k in range(len(self._monomial_coefficients[degree])):
+                self._monomial_coefficients[degree][k] = self._parent.base_ring()(self._monomial_coefficients[degree][k]) # conversion
 
     def __repr__(self):
         """
