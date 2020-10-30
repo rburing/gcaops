@@ -282,6 +282,17 @@ class SuperfunctionAlgebra:
         """
         return "Superfunction algebra over {} with even coordinates {} and odd coordinates {}".format(self._base_ring, self._even_coordinates, self._gens)
 
+    def __call__(self, arg):
+        """
+        Return ``arg`` converted into an element of ``self``.
+        """
+        if arg in self._base_ring:
+            return self.element_class(self, { 0 : [arg]})
+        elif isinstance(arg, self.element_class) and arg.parent() == self:
+            return arg
+        else:
+            raise ValueError('cannot convert {} into element'.format(arg))
+
     def base_ring(self):
         """
         Return the base ring of ``self``, consisting of (even, degree 0) functions.
