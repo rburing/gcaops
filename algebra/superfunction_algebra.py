@@ -180,7 +180,7 @@ class Superfunction:
         difference = self - other
         for degree in difference._monomial_coefficients:
             for k in range(len(difference._monomial_coefficients[degree])):
-                if difference._monomial_coefficients[degree] != 0:
+                if difference._monomial_coefficients[degree][k] != self._parent.base_ring().zero():
                     return False
         return True
 
