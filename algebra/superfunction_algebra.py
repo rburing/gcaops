@@ -85,11 +85,13 @@ class Superfunction:
                 monomial_coefficients[degree][k] = f(self._monomial_coefficients[degree][k])
         return self.__class__(self._parent, monomial_coefficients)
 
-    def __pos__(self):
+    def copy(self):
         """
-        Return the positive of ``self`` (that is, just a copy).
+        Return a copy of ``self``.
         """
         return self.map_coefficients(lambda c: c)
+
+    __pos__ = copy
 
     def __neg__(self):
         """
