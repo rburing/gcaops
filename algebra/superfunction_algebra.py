@@ -107,12 +107,12 @@ class Superfunction:
         for degree in self._monomial_coefficients:
             for k in range(len(self._monomial_coefficients[degree])):
                 monomial_coefficients[degree][k] = self._monomial_coefficients[degree][k]
-        if other in self._parent.base_ring():
-            monomial_coefficients[0][0] = self._parent._simplify(monomial_coefficients[0][0] + other)
-        elif isinstance(other, self.__class__):
+        if isinstance(other, self.__class__):
             for degree in other._monomial_coefficients:
                 for k in range(len(other._monomial_coefficients[degree])):
                     monomial_coefficients[degree][k] = self._parent._simplify(monomial_coefficients[degree][k] + other._monomial_coefficients[degree][k])
+        elif other in self._parent.base_ring():
+            monomial_coefficients[0][0] = self._parent._simplify(monomial_coefficients[0][0] + other)
         else:
             raise NotImplementedError
         return self.__class__(self._parent, monomial_coefficients)
@@ -131,12 +131,12 @@ class Superfunction:
         for degree in self._monomial_coefficients:
             for k in range(len(self._monomial_coefficients[degree])):
                 monomial_coefficients[degree][k] = self._monomial_coefficients[degree][k]
-        if other in self._parent.base_ring():
-            monomial_coefficients[0][0] -= other
-        elif isinstance(other, self.__class__):
+        if isinstance(other, self.__class__):
             for degree in other._monomial_coefficients:
                 for k in range(len(other._monomial_coefficients[degree])):
                     monomial_coefficients[degree][k] = self._parent._simplify(monomial_coefficients[degree][k] - other._monomial_coefficients[degree][k])
+        elif other in self._parent.base_ring():
+            monomial_coefficients[0][0] -= other
         else:
             raise NotImplementedError
         return self.__class__(self._parent, monomial_coefficients)
@@ -152,11 +152,7 @@ class Superfunction:
         Return ``self`` multiplied by ``other``.
         """
         monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
-        if other in self._parent.base_ring():
-            for degree in self._monomial_coefficients:
-                for k in range(len(self._monomial_coefficients[degree])):
-                    monomial_coefficients[degree][k] = self._parent._simplify(self._monomial_coefficients[degree][k] * other)
-        elif isinstance(other, self.__class__):
+        if isinstance(other, self.__class__):
             for degree1 in self._monomial_coefficients:
                 for k1 in range(len(self._monomial_coefficients[degree1])):
                     if self._parent._is_zero(self._monomial_coefficients[degree1][k1]):
@@ -168,6 +164,10 @@ class Superfunction:
                             prod, sign = self._parent._mul_on_basis(degree1,k1,degree2,k2)
                             if prod is not None:
                                 monomial_coefficients[degree1+degree2][prod] = self._parent._simplify(monomial_coefficients[degree1+degree2][prod] + sign * self._monomial_coefficients[degree1][k1] * other._monomial_coefficients[degree2][k2])
+        elif other in self._parent.base_ring():
+            for degree in self._monomial_coefficients:
+                for k in range(len(self._monomial_coefficients[degree])):
+                    monomial_coefficients[degree][k] = self._parent._simplify(self._monomial_coefficients[degree][k] * other)
         else:
             raise NotImplementedError
         return self.__class__(self._parent, monomial_coefficients)
