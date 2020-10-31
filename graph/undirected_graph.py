@@ -35,6 +35,18 @@ class UndirectedGraph:
         """
         return 'UndirectedGraph({}, {})'.format(self._num_vertices, self._edges)
 
+    def __len__(self):
+        """
+        Return the number of vertices of ``self``.
+        """
+        return self._num_vertices
+
+    def __eq__(self, other):
+        """
+        Return ``True`` if ``self`` equals ``other``.
+        """
+        return isinstance(other, self.__class__) and self._num_vertices == other._num_vertices and self._edges == other._edges
+
     def edges(self):
         """
         Return the list of edges of ``self``.
