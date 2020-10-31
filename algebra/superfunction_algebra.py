@@ -215,7 +215,7 @@ class Superfunction:
             for arg in args:
                 result = result.derivative(arg)
             return result
-        elif len(args) == 1 and args[0] in self._parent.gens():
+        elif len(args) == 1 and any(args[0] is xi for xi in self._parent.gens()):
             j = self._parent.gens().index(args[0])
             monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
             for degree in self._monomial_coefficients:
@@ -224,12 +224,23 @@ class Superfunction:
                     if derivative is not None:
                         monomial_coefficients[degree-1][derivative] = sign * self._monomial_coefficients[degree][k]
             return self.__class__(self._parent, monomial_coefficients)
-        elif len(args) == 1 and args[0] in self._parent.even_coordinates():
+        elif len(args) == 1 and any(args[0] is x for x in self._parent.even_coordinates()):
             monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
             for degree in self._monomial_coefficients:
                 for k in range(len(self._monomial_coefficients[degree])):
                     monomial_coefficients[degree][k] = self._monomial_coefficients[degree][k].derivative(args[0])
             return self.__class__(self._parent, monomial_coefficients)
+        elif len(args) == 1:
+            # by now we know args[0] is not identically a coordinate, but maybe it is equal to one:
+            try:
+                actual_xi_idx = self._parent.gens().index(args[0])
+                return self.derivative(self._parent.gen(actual_xi_idx))
+            except ValueError:
+                try:
+                    actual_x_idx = self._parent.even_coordinates().index(args[0])
+                    return self.derivative(self._parent.even_coordinate(actual_x_idx))
+                except ValueError:
+                    raise ValueError("{} not recognized as a coordinate".format(args[0]))
         else:
             raise ValueError("Don't know how to take derivative with respect to {}".format(args))
 
