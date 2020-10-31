@@ -82,7 +82,7 @@ class Superfunction:
         monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
         for degree in self._monomial_coefficients:
             for k in range(len(self._monomial_coefficients[degree])):
-                monomial_coefficients[degree][k] = f(self._monomial_coefficients[degree][k])
+                monomial_coefficients[degree][k] = self._parent._simplify(f(self._monomial_coefficients[degree][k]))
         return self.__class__(self._parent, monomial_coefficients)
 
     def copy(self):
@@ -108,11 +108,11 @@ class Superfunction:
             for k in range(len(self._monomial_coefficients[degree])):
                 monomial_coefficients[degree][k] = self._monomial_coefficients[degree][k]
         if other in self._parent.base_ring():
-            monomial_coefficients[0][0] += other
+            monomial_coefficients[0][0] = self._parent._simplify(monomial_coefficients[0][0] + other)
         elif isinstance(other, self.__class__):
             for degree in other._monomial_coefficients:
                 for k in range(len(other._monomial_coefficients[degree])):
-                    monomial_coefficients[degree][k] += other._monomial_coefficients[degree][k]
+                    monomial_coefficients[degree][k] = self._parent._simplify(monomial_coefficients[degree][k] + other._monomial_coefficients[degree][k])
         else:
             raise NotImplementedError
         return self.__class__(self._parent, monomial_coefficients)
@@ -136,7 +136,7 @@ class Superfunction:
         elif isinstance(other, self.__class__):
             for degree in other._monomial_coefficients:
                 for k in range(len(other._monomial_coefficients[degree])):
-                    monomial_coefficients[degree][k] -= other._monomial_coefficients[degree][k]
+                    monomial_coefficients[degree][k] = self._parent._simplify(monomial_coefficients[degree][k] - other._monomial_coefficients[degree][k])
         else:
             raise NotImplementedError
         return self.__class__(self._parent, monomial_coefficients)
@@ -155,19 +155,19 @@ class Superfunction:
         if other in self._parent.base_ring():
             for degree in self._monomial_coefficients:
                 for k in range(len(self._monomial_coefficients[degree])):
-                    monomial_coefficients[degree][k] = self._monomial_coefficients[degree][k] * other
+                    monomial_coefficients[degree][k] = self._parent._simplify(self._monomial_coefficients[degree][k] * other)
         elif isinstance(other, self.__class__):
             for degree1 in self._monomial_coefficients:
                 for k1 in range(len(self._monomial_coefficients[degree1])):
-                    if self._monomial_coefficients[degree1][k1] == 0:
+                    if self._parent._is_zero(self._monomial_coefficients[degree1][k1]):
                         continue
                     for degree2 in other._monomial_coefficients:
                         for k2 in range(len(other._monomial_coefficients[degree2])):
-                            if other._monomial_coefficients[degree2][k2] == 0:
+                            if self._parent._is_zero(other._monomial_coefficients[degree2][k2]):
                                 continue
                             prod, sign = self._parent._mul_on_basis(degree1,k1,degree2,k2)
                             if prod is not None:
-                                monomial_coefficients[degree1+degree2][prod] += sign * self._monomial_coefficients[degree1][k1] * other._monomial_coefficients[degree2][k2]
+                                monomial_coefficients[degree1+degree2][prod] = self._parent._simplify(monomial_coefficients[degree1+degree2][prod] + sign * self._monomial_coefficients[degree1][k1] * other._monomial_coefficients[degree2][k2])
         else:
             raise NotImplementedError
         return self.__class__(self._parent, monomial_coefficients)
@@ -190,7 +190,7 @@ class Superfunction:
         difference = self - other
         for degree in difference._monomial_coefficients:
             for k in range(len(difference._monomial_coefficients[degree])):
-                if difference._monomial_coefficients[degree][k] != self._parent.base_ring().zero():
+                if not self._parent._is_zero(difference._monomial_coefficients[degree][k]):
                     return False
         return True
 
@@ -200,7 +200,7 @@ class Superfunction:
         """
         for d in reversed(sorted(self._monomial_coefficients.keys())):
             for k in range(len(self._monomial_coefficients[d])):
-                if self._monomial_coefficients[d] != self._parent.base_ring().zero():
+                if any(not self._parent._is_zero(c) for c in self._monomial_coefficients[d]):
                     return d
         return 0
 
@@ -224,13 +224,13 @@ class Superfunction:
                 for k in range(len(self._monomial_coefficients[degree])):
                     derivative, sign = self._parent._derivative_on_basis(degree, k, j)
                     if derivative is not None:
-                        monomial_coefficients[degree-1][derivative] = sign * self._monomial_coefficients[degree][k]
+                        monomial_coefficients[degree-1][derivative] = self._parent._simplify(sign * self._monomial_coefficients[degree][k])
             return self.__class__(self._parent, monomial_coefficients)
         elif len(args) == 1 and any(args[0] is x for x in self._parent.even_coordinates()):
             monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
             for degree in self._monomial_coefficients:
                 for k in range(len(self._monomial_coefficients[degree])):
-                    monomial_coefficients[degree][k] = self._monomial_coefficients[degree][k].derivative(args[0])
+                    monomial_coefficients[degree][k] = self._parent._simplify(self._monomial_coefficients[degree][k].derivative(args[0]))
             return self.__class__(self._parent, monomial_coefficients)
         elif len(args) == 1:
             # by now we know args[0] is not identically a coordinate, but maybe it is equal to one:
@@ -267,7 +267,7 @@ class SuperfunctionAlgebra:
     It is a free module over the base ring with an ordered basis consisting of sorted monomials in the odd coordinates.
     The elements encode skew-symmetric multi-derivations of the base ring, or multi-vectors.
     """
-    def __init__(self, base_ring, even_coordinates=None, names=None):
+    def __init__(self, base_ring, even_coordinates=None, names=None, simplify=lambda x: x, is_zero=lambda x: x.is_zero()):
         """
         Initialize ``self``.
 
@@ -278,6 +278,10 @@ class SuperfunctionAlgebra:
         - ``even_coordinates`` -- (default: ``None``) a list or tuple of elements of ``base_ring``; if none is provided, then it is set to ``base_ring.gens()``
 
         - ``names`` -- (default: ``None``) a list or tuple of strings or a comma separated string, consisting of names for the odd coordinates; or a single string consisting of a prefix; if none is provided, then it is set to the prefix 'xi'
+
+        - ``simplify`` -- (default: ``lambda x: x``) a function that returns a simplification of an element of the base ring (will be used in each operation on elements that affects coefficients)
+
+        - ``is_zero`` -- (default: ``lambda x: x.is_zero()``) a function that returns ``True`` when a simplified element of the base ring is equal to zero (will be used to decide equality of elements, to calculate the degree of elements, and to skip terms in some operations on elements)
         """
         self.element_class = Superfunction
         self._base_ring = base_ring
@@ -302,6 +306,8 @@ class SuperfunctionAlgebra:
         self.__ngens = len(names)
         self._gens = tuple(self.element_class(self, {1 : [self._base_ring.one() if j == k else self._base_ring.zero() for j in range(self.__ngens)]}) for k in range(self.__ngens))
         self._basis = keydefaultdict(lambda degree: list(combinations(range(self.__ngens), degree)))
+        self._simplify = simplify
+        self._is_zero = is_zero
 
     def __repr__(self):
         """
