@@ -1,15 +1,7 @@
-from collections import defaultdict
 from collections.abc import Iterable, MutableMapping
 from itertools import combinations
 from util.permutation import selection_sort
-
-class keydefaultdict(defaultdict):
-    def __missing__(self, key):
-        if self.default_factory is None:
-            raise KeyError(key)
-        else:
-            ret = self[key] = self.default_factory(key)
-            return ret
+from util.misc import keydefaultdict
 
 class Superfunction:
     """
