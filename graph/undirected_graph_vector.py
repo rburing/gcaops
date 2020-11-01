@@ -41,6 +41,66 @@ class UndirectedGraphVector:
         else:
             return '0'
 
+    def copy(self):
+        """
+        Return a copy of ``self``.
+        """
+        return __class__(self._parent, self._vector)
+
+    __pos__ = copy
+
+    def __neg__(self):
+        """
+        Return the negative of ``self``.
+        """
+        return __class__(self._parent, {k : -v for (k,v) in self._vector.items()})
+
+    def __add__(self, other):
+        """
+        Return ``self`` added to ``other``.
+        """
+        v = self._vector.copy()
+        for k in other._vector:
+            v[k] += other._vector[k]
+        return __class__(self._parent, v)
+
+    def __sub__(self, other):
+        """
+        Return ``other`` subtracted from ``self``.
+        """
+        v = self._vector.copy()
+        for k in other._vector:
+            v[k] -= other._vector[k]
+        return __class__(self._parent, v)
+
+    def __mul__(self, other):
+        """
+        Return ``self`` multiplied by ``other``.
+        """
+        v = self._vector.copy()
+        if other in self._parent.base_ring():
+            for k in v:
+                v[k] *= other
+            return __class__(self._parent, v)
+        else:
+            raise NotImplementedError
+
+    def __rmul__(self, other):
+        """
+        Return ``other`` multiplied by ``self``.
+        """
+        return self * other
+
+    def __eq__(self, other):
+        """
+        Return ``True`` if ``self`` is equal to ``other`` and ``False`` otherwise.
+        """
+        difference = self - other
+        for k in difference._vector:
+            if not difference._vector[k].is_zero():
+                return False
+        return True
+
 class UndirectedGraphModule:
     """
     Module spanned by undirected graphs.
