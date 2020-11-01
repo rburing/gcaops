@@ -41,6 +41,12 @@ class UndirectedGraphVector:
         else:
             return '0'
 
+    def parent(self):
+        """
+        Return the parent UndirectedGraphModule that ``self`` belongs to.
+        """
+        return self._parent
+
     def copy(self):
         """
         Return a copy of ``self``.
