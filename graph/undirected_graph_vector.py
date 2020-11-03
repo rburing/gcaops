@@ -26,11 +26,11 @@ class UndirectedGraphVector:
         Return a string representation of ``self``.
         """
         terms = []
-        for idx in self._vector:
-            c = self._vector[idx]
+        for key in self._vector:
+            c = self._vector[key]
             if c.is_zero():
                 continue
-            g, sign = self._parent._graph_basis.index_to_graph(idx)
+            g, sign = self._parent._graph_basis.key_to_graph(key)
             c *= sign
             c_str = repr(c)
             if c_str != '1':
@@ -144,8 +144,8 @@ class UndirectedGraphModule:
         Convert ``arg`` into an element of ``self``.
         """
         if isinstance(arg, UndirectedGraph):
-            index, sign = self._graph_basis.graph_to_index(arg)
-            if index is not None:
-                return self.element_class(self, { index : self.base_ring().one() * sign })
+            key, sign = self._graph_basis.graph_to_key(arg)
+            if key is not None:
+                return self.element_class(self, { key : self.base_ring().one() * sign })
             else: # must be zero
                 return self.element_class(self, {})
