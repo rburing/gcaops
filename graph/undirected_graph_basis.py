@@ -62,7 +62,7 @@ class UndirectedGraphComplexBasis(UndirectedGraphBasis):
 
         Either ``(None, 1)`` if the input ``graph`` is not in the span of the basis, or a tuple consisting of a key and a sign, where a key is a tuple consisting of the number of vertices, the number of edges, and the index of the graph in the list.
         """
-        g, sign = nauty_canonicalize(graph)
+        g, _, sign = nauty_canonicalize(graph)
         v, e = len(g), len(g.edges())
         try:
             index = self._graphs[v,e].index(g)
@@ -104,3 +104,61 @@ class UndirectedGraphComplexBasis(UndirectedGraphBasis):
         else:
             filters_str = ''
         return 'Basis consisting of representatives of isomorphism classes of undirected graphs{} with no automorphisms that induce an odd permutation on edges'.format(filters_str)
+
+class UndirectedGraphOperadBasis(UndirectedGraphBasis):
+    """
+    Basis consisting of representatives of isomorphism classes of labeled undirected graphs with no automorphisms that induce an odd permutation on edges
+    """
+    def __init__(self):
+        """
+        Initialize ``self``.
+        """
+        self._graphs = keydefaultdict(lambda key: list(filter(lambda g: not nauty_has_odd_automorphism(g), nauty_generate(*key))))
+
+    def graph_to_key(self, graph):
+        """
+        Return a tuple consisting of the key in ``self`` and the sign factor such that ``graph`` equals the sign times the graph identified by the key.
+
+        INPUT:
+
+        - ``graph`` -- an UndirectedGraph
+
+        OUTPUT:
+
+        Either ``(None, 1)`` if the input ``graph`` is not in the span of the basis, or a tuple consisting of a key and a sign, where a key is a tuple consisting of the number of vertices, the number of edges, the index of the graph in the list, followed by a permutation of vertices.
+        """
+        g, undo_canonicalize, sign = nauty_canonicalize(graph)
+        v, e = len(g), len(g.edges())
+        try:
+            index = self._graphs[v,e].index(g)
+            return (v,e,index) + tuple(undo_canonicalize), sign
+        except ValueError:
+            return None, 1
+
+    def key_to_graph(self, key):
+        """
+        Return a tuple consisting of an UndirectedGraph and the sign factor such that the sign times the graph equals the graph identified by the key.
+
+        INPUT:
+
+        - ``key`` -- a key in ``self``
+
+        OUTPUT:
+
+        Either ``(None, 1)`` if the input ``key`` is not in the basis, or a tuple consisting of an UndirectedGraph and a sign.
+        """
+        v, e, index = key[:3]
+        undo_canonicalize = key[3:]
+        try:
+            G = self._graphs[v,e][index]
+            g = G.relabeled(undo_canonicalize)
+            sign = g.canonicalize_edges()
+            return g, sign
+        except IndexError:
+            return None, 1
+
+    def __repr__(self):
+        """
+        Return a string representation of ``self``.
+        """
+        return 'Basis consisting of representatives of isomorphism classes of labeled undirected graphs with no automorphisms that induce an odd permutation on edges'

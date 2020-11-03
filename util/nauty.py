@@ -10,7 +10,10 @@ def nauty_canonicalize(g):
     new_edges = list(G.edges(labels=False))
     edge_permutation = [tuple(sorted([sigma[edge[0]],sigma[edge[1]]])) for edge in edges]
     index_permutation = [new_edges.index(e) for e in edge_permutation]
-    return UndirectedGraph(n, list(new_edges)), selection_sort(index_permutation)
+    undo_canonicalize = [0]*n
+    for k, v in sigma.items():
+        undo_canonicalize[v] = k
+    return UndirectedGraph(n, list(new_edges)), undo_canonicalize, selection_sort(index_permutation)
 
 def nauty_has_odd_automorphism(g):
     n = len(g)
