@@ -58,3 +58,10 @@ class UndirectedGraph:
         Lexicographically order the edges of ``self`` and return the sign of that edge permutation.
         """
         return selection_sort(self._edges)
+
+    def relabeled(self, relabeling):
+        """
+        Return a vertex relabeling of ``self``.
+        """
+        new_edges = [(relabeling[a], relabeling[b]) for (a,b) in self._edges]
+        return __class__(self._num_vertices, new_edges)
