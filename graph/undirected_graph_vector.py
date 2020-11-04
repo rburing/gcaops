@@ -126,6 +126,22 @@ class UndirectedGraphVector:
                 return False
         return True
 
+    def bi_gradings(self):
+        """
+        Return the set of tuples ``(v,e)`` such that ``self`` contains terms with ``v`` vertices and ``e`` edges.
+        """
+        return set((key[0],key[1]) for key in self._vector)
+
+    def homogeneous_part(self, vertices, edges):
+        """
+        Return the homogeneous part of ``self`` consisting only of terms with the given number of ``vertices`` and ``edges``.
+        """
+        v = {}
+        for key in self._vector:
+            if key[:2] == (vertices, edges):
+                v[key] = self._vector[key]
+        return self.__class__(self._parent, v)
+    
     def insertion(self, position, other):
         """
         Return the insertion of ``other`` into ``self`` at the vertex ``position``.
