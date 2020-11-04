@@ -66,19 +66,37 @@ class UndirectedGraphVector:
         """
         Return ``self`` added to ``other``.
         """
-        v = self._vector.copy()
-        for k in other._vector:
-            v[k] += other._vector[k]
-        return __class__(self._parent, v)
+        if isinstance(other, __class__):
+            v = self._vector.copy()
+            for k in other._vector:
+                v[k] += other._vector[k]
+            return __class__(self._parent, v)
+        elif other == 0:
+            return self.copy()
+
+    def __radd__(self, other):
+        """
+        Return ``other`` added to ``self``.
+        """
+        return self + other
 
     def __sub__(self, other):
         """
         Return ``other`` subtracted from ``self``.
         """
-        v = self._vector.copy()
-        for k in other._vector:
-            v[k] -= other._vector[k]
-        return __class__(self._parent, v)
+        if isinstance(other, __class__):
+            v = self._vector.copy()
+            for k in other._vector:
+                v[k] -= other._vector[k]
+            return __class__(self._parent, v)
+        elif other == 0:
+            return self.copy()
+
+    def __rsub__(self, other):
+        """
+        Return ``self`` subtracted from ``other``.
+        """
+        return -(self - other)
 
     def __mul__(self, other):
         """
@@ -194,3 +212,5 @@ class UndirectedGraphModule:
                 if key is not None:
                     v._vector[key] += coeff
             return v
+        elif arg == 0:
+            return self.element_class(self, {})
