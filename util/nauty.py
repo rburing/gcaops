@@ -3,6 +3,8 @@ from util.permutation import selection_sort
 from sage.graphs.graph import Graph
 from sage.graphs.graph_generators import GraphGenerators
 
+# TODO: cache
+
 def nauty_canonicalize(g):
     n = len(g)
     edges = g.edges()

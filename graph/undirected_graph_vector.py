@@ -1,6 +1,7 @@
 from .undirected_graph import UndirectedGraph
 from .undirected_graph_basis import UndirectedGraphBasis
 from collections import defaultdict
+from itertools import product
 
 class UndirectedGraphVector:
     """
@@ -106,6 +107,41 @@ class UndirectedGraphVector:
             if not difference._vector[k].is_zero():
                 return False
         return True
+    
+    def insertion(self, position, other):
+        """
+        Return the insertion of ``other`` into ``self`` at the vertex ``position``.
+        """
+        # TODO: cache when self and other are in normal form. when not, use symmetric group action + operad axioms to deduce result.
+        terms = []
+        for user_key in self._vector:
+            user_coeff = self._vector[user_key]
+            if user_coeff.is_zero():
+                continue
+            for victim_key in other._vector:
+                victim_coeff = other._vector[victim_key]
+                if victim_coeff.is_zero():
+                    continue
+                user, user_sign = self._parent._graph_basis.key_to_graph(user_key)
+                user_coeff *= user_sign
+                victim, victim_sign = other._parent._graph_basis.key_to_graph(victim_key)
+                victim_coeff *= victim_sign
+                # relabel user (vertices > position are shifted to make room for victim)
+                user_edges = [[a + len(victim) - 1 if a > position else a, b + len(victim) - 1 if b > position else b] for (a,b) in user.edges()]
+                # relabel victim
+                victim_edges = [(position + a, position + b) for (a,b) in victim.edges()]
+                # find edges which are incident to position
+                incident = [(i,user_edges[i].index(position)) for i in range(len(user_edges)) if position in user_edges[i]]
+                # loop over all possible new endpoints (in victim) for these edges
+                for endpoints in product(range(len(victim)), repeat=len(incident)):
+                    # redirect edges (which were incident to position) to victim
+                    for k in range(len(incident)):
+                        a, b = incident[k]
+                        user_edges[a][b] = position + endpoints[k]
+                    # NOTE: the convention is that victim edges go last:
+                    term = UndirectedGraph(len(user) + len(victim) - 1, [tuple(e) for e in user_edges] + victim_edges)
+                    terms.append([user_coeff*victim_coeff, term])
+        return self._parent(terms)
 
 class UndirectedGraphModule:
     """
@@ -149,3 +185,12 @@ class UndirectedGraphModule:
                 return self.element_class(self, { key : self.base_ring().one() * sign })
             else: # must be zero
                 return self.element_class(self, {})
+        elif isinstance(arg, list):
+            v = self.element_class(self, {})
+            for term in arg:
+                coeff, graph = term
+                key, sign = self._graph_basis.graph_to_key(graph)
+                coeff *= sign
+                if key is not None:
+                    v._vector[key] += coeff
+            return v
