@@ -52,7 +52,7 @@ class UndirectedGraphVector:
         """
         Return a copy of ``self``.
         """
-        return __class__(self._parent, self._vector)
+        return self.__class__(self._parent, self._vector)
 
     __pos__ = copy
 
@@ -60,17 +60,17 @@ class UndirectedGraphVector:
         """
         Return the negative of ``self``.
         """
-        return __class__(self._parent, {k : -v for (k,v) in self._vector.items()})
+        return self.__class__(self._parent, {k : -v for (k,v) in self._vector.items()})
 
     def __add__(self, other):
         """
         Return ``self`` added to ``other``.
         """
-        if isinstance(other, __class__):
+        if isinstance(other, self.__class__):
             v = self._vector.copy()
             for k in other._vector:
                 v[k] += other._vector[k]
-            return __class__(self._parent, v)
+            return self.__class__(self._parent, v)
         elif other == 0:
             return self.copy()
 
@@ -84,11 +84,11 @@ class UndirectedGraphVector:
         """
         Return ``other`` subtracted from ``self``.
         """
-        if isinstance(other, __class__):
+        if isinstance(other, self.__class__):
             v = self._vector.copy()
             for k in other._vector:
                 v[k] -= other._vector[k]
-            return __class__(self._parent, v)
+            return self.__class__(self._parent, v)
         elif other == 0:
             return self.copy()
 
@@ -106,7 +106,7 @@ class UndirectedGraphVector:
         if other in self._parent.base_ring():
             for k in v:
                 v[k] *= other
-            return __class__(self._parent, v)
+            return self.__class__(self._parent, v)
         else:
             raise NotImplementedError
 
@@ -125,7 +125,7 @@ class UndirectedGraphVector:
             if not difference._vector[k].is_zero():
                 return False
         return True
-    
+
     def insertion(self, position, other):
         """
         Return the insertion of ``other`` into ``self`` at the vertex ``position``.
