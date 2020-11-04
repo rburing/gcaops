@@ -187,6 +187,12 @@ class UndirectedGraphModule:
         """
         return self._base_ring
 
+    def basis(self):
+        """
+        Return the basis of ``self``.
+        """
+        return self._graph_basis
+
     def __repr__(self):
         """
         Return a string representation of ``self``.
