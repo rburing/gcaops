@@ -2,6 +2,7 @@ from collections.abc import Iterable, MutableMapping
 from itertools import combinations
 from util.permutation import selection_sort
 from util.misc import keydefaultdict
+from .superfunction_algebra_operation import SuperfunctionAlgebraSchoutenBracket
 from .tensor_product import TensorProduct
 
 class Superfunction:
@@ -302,6 +303,7 @@ class SuperfunctionAlgebra:
         self._simplify = simplify
         self._is_zero = is_zero
         self._tensor_powers = keydefaultdict(lambda n: TensorProduct([self]*n))
+        self._schouten_bracket = SuperfunctionAlgebraSchoutenBracket(self._tensor_powers[2], self)
 
     def __repr__(self):
         """
@@ -426,3 +428,10 @@ class SuperfunctionAlgebra:
         Return the ``n``th tensor power of ``self``.
         """
         return self._tensor_powers[n]
+
+    def schouten_bracket(self):
+        """
+        Return the Schouten bracket on ``self``.
+        """
+        return self._schouten_bracket
+
