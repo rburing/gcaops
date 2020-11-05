@@ -2,6 +2,7 @@ from collections.abc import Iterable, MutableMapping
 from itertools import combinations
 from util.permutation import selection_sort
 from util.misc import keydefaultdict
+from .tensor_product import TensorProduct
 
 class Superfunction:
     """
@@ -300,6 +301,7 @@ class SuperfunctionAlgebra:
         self._basis = keydefaultdict(lambda degree: list(combinations(range(self.__ngens), degree)))
         self._simplify = simplify
         self._is_zero = is_zero
+        self._tensor_powers = keydefaultdict(lambda n: TensorProduct([self]*n))
 
     def __repr__(self):
         """
@@ -418,3 +420,9 @@ class SuperfunctionAlgebra:
         derivative = tuple(lst)
         assert derivative in self._basis[degree-1]
         return self._basis[degree-1].index(derivative), sign
+
+    def tensor_power(self, n):
+        """
+        Return the ``n``th tensor power of ``self``.
+        """
+        return self._tensor_powers[n]
