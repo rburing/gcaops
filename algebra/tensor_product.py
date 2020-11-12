@@ -1,6 +1,7 @@
 from collections.abc import MutableSequence
 from itertools import permutations
 from util.permutation import selection_sort_graded
+from math import factorial
 
 class TensorProductElement:
     """
@@ -54,6 +55,7 @@ class TensorProductElement:
         """
         # TODO: optimize
         n = self._parent.nfactors()
+        prefactor_inverse = factorial(n)
         new_terms = []
         for term in self._terms:
             degrees = [f.degree() for f in term]
@@ -61,6 +63,7 @@ class TensorProductElement:
                 new_term = [term[sigma[k]] for k in range(n)]
                 sign = selection_sort_graded(list(sigma), degrees.copy())
                 new_term[0] *= sign
+                new_term[0] /= prefactor_inverse
                 new_terms.append(new_term)
         return self.__class__(self._parent, new_terms)
 
