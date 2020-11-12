@@ -132,6 +132,19 @@ class UndirectedGraphVector:
         """
         return set((key[0],key[1]) for key in self._vector)
 
+    def nvertices(self):
+        """
+        Return the number of vertices in each graph in ``self``.
+
+        ASSUMPTIONS:
+
+        Assumes all graphs in ``self`` have the same number of vertices.
+        """
+        for key in self._vector:
+            v, e = key[:2]
+            if not self._vector[key].is_zero():
+                return v
+
     def homogeneous_part(self, vertices, edges):
         """
         Return the homogeneous part of ``self`` consisting only of terms with the given number of ``vertices`` and ``edges``.
