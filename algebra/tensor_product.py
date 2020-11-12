@@ -53,18 +53,41 @@ class TensorProductElement:
 
         Assumes each factor in each term of ``self`` has a ``degree`` method and is homogeneous of that degree.
         """
-        # TODO: optimize
         n = self._parent.nfactors()
         prefactor_inverse = factorial(n)
         new_terms = []
         for term in self._terms:
+            symmetrized_terms = []
+            # label the indices of identical factors by the minimal index which they are identical to
+            minimal_label = {}
+            for i in range(n):
+                if not i in minimal_label:
+                    for j in range(i,n):
+                        if term[j] is term[i]:
+                            minimal_label[j] = i
+            # for each permutation, will use the minimal labeling as a key, to accumulate coefficients
+            keys = []
+            key_counter = 0
+            accumulated_coeff = []
             degrees = [f.degree() for f in term]
+            # sum over all permutations, but compute only once for each permutation of identical factors
             for sigma in permutations(range(n)):
-                new_term = [term[sigma[k]] for k in range(n)]
+                key = tuple(minimal_label[i] for i in sigma)
                 sign = selection_sort_graded(list(sigma), degrees.copy())
-                new_term[0] *= sign
-                new_term[0] /= prefactor_inverse
-                new_terms.append(new_term)
+                if not key in keys:
+                    idx = key_counter
+                    keys.append(key)
+                    accumulated_coeff.append(0)
+                    new_term = [term[k] for k in key]
+                    new_term[0] /= prefactor_inverse
+                    new_terms.append(new_term)
+                    key_counter += 1
+                else:
+                    idx = keys.index(key)
+                accumulated_coeff[idx] += sign
+            # now distribute accumulated coefficients
+            for idx in range(key_counter):
+                new_terms[-key_counter+idx][0] *= accumulated_coeff[idx]
         return self.__class__(self._parent, new_terms)
 
 class TensorProduct:
