@@ -177,6 +177,12 @@ class Superfunction:
         """
         return self * other
 
+    def __truediv__(self, other):
+        """
+        Return ``self`` divided by ``other``.
+        """
+        return self.map_coefficients(lambda c: c / other)
+
     def __eq__(self, other):
         """
         Return ``True`` if ``self`` equals ``other`` and ``False`` otherwise.
