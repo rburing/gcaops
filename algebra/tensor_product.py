@@ -1,4 +1,6 @@
 from collections.abc import MutableSequence
+from itertools import permutations
+from util.permutation import selection_sort_graded
 
 class TensorProductElement:
     """
@@ -41,6 +43,26 @@ class TensorProductElement:
         Return the list of terms of ``self``.
         """
         return self._terms
+
+    def graded_symmetrization(self):
+        """
+        Return the graded symmetrization of ``self``.
+
+        ASSUMPTION:
+
+        Assumes each factor in each term of ``self`` has a ``degree`` method and is homogeneous of that degree.
+        """
+        # TODO: optimize
+        n = self._parent.nfactors()
+        new_terms = []
+        for term in self._terms:
+            degrees = [f.degree() for f in term]
+            for sigma in permutations(range(n)):
+                new_term = [term[sigma[k]] for k in range(n)]
+                sign = selection_sort_graded(list(sigma), degrees.copy())
+                new_term[0] *= sign
+                new_terms.append(new_term)
+        return self.__class__(self._parent, new_terms)
 
 class TensorProduct:
     """
