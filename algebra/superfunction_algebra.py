@@ -3,6 +3,7 @@ from itertools import combinations
 from util.permutation import selection_sort
 from util.misc import keydefaultdict
 from .superfunction_algebra_operation import SuperfunctionAlgebraSchoutenBracket
+from .superfunction_algebra_operation import SuperfunctionAlgebraUndirectedGraphOperation, SuperfunctionAlgebraSymmetricUndirectedGraphOperation
 from .tensor_product import TensorProduct
 
 class Superfunction:
@@ -441,3 +442,24 @@ class SuperfunctionAlgebra:
         """
         return self._schouten_bracket
 
+    def graph_operation(self, graph_vector):
+        """
+        Return the operation on ``self`` defined by ``graph_vector``.
+
+        ASSUMPTION:
+
+        Assumes each graph in ``graph_vector`` has the same number of vertices.
+        """
+        arity = graph_vector.nvertices()
+        return SuperfunctionAlgebraUndirectedGraphOperation(self.tensor_power(arity), self, graph_vector)
+
+    def symmetric_graph_operation(self, graph_vector):
+        """
+        Return the graded symmetric operation on ``self`` defined by ``graph_vector``.
+
+        ASSUMPTION:
+
+        Assumes each graph in ``graph_vector`` has the same number of vertices.
+        """
+        arity = graph_vector.nvertices()
+        return SuperfunctionAlgebraSymmetricUndirectedGraphOperation(self.tensor_power(arity), self, graph_vector)
