@@ -16,7 +16,7 @@ class SuperfunctionAlgebraOperation(ABC):
         """
         Return a string representation of ``self``.
         """
-        return 'Operation on {} of arity {}'.format(self._codomain, self._domain.nfactors())
+        return 'Operation of arity {} on {}'.format(self._domain.nfactors(), self._codomain)
 
     @abstractmethod
     def __call__(self, *arg):
