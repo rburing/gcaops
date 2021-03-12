@@ -64,4 +64,5 @@ class UndirectedGraph:
         Return a vertex relabeling of ``self``.
         """
         new_edges = [(relabeling[a], relabeling[b]) for (a,b) in self._edges]
+        # constructor takes care of canonicalizing individual edges:
         return __class__(self._num_vertices, new_edges)
