@@ -1,6 +1,6 @@
 from util.misc import keydefaultdict
 from util.permutation import selection_sort
-from util.nauty import nauty_canonicalize, nauty_generate, nauty_has_odd_automorphism
+from util.undirected_graph_sage import nauty_canonicalize, nauty_generate, nauty_has_odd_automorphism
 from abc import ABC, abstractmethod
 
 class UndirectedGraphBasis(ABC):
