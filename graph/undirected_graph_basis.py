@@ -1,6 +1,6 @@
 from util.misc import keydefaultdict
 from util.permutation import selection_sort
-from util.undirected_graph_sage import nauty_canonicalize, nauty_generate, nauty_has_odd_automorphism
+from util.undirected_graph_sage import undirected_graph_canonicalize, undirected_graph_generate, undirected_graph_has_odd_automorphism
 from abc import ABC, abstractmethod
 
 class UndirectedGraphBasis(ABC):
@@ -48,7 +48,7 @@ class UndirectedGraphComplexBasis(UndirectedGraphBasis):
         self._connected = connected
         self._biconnected = biconnected
         self._min_degree = min_degree
-        self._graphs = keydefaultdict(lambda key: list(filter(lambda g: not nauty_has_odd_automorphism(g), nauty_generate(*key, connected=connected, biconnected=biconnected, min_degree=min_degree))))
+        self._graphs = keydefaultdict(lambda key: list(filter(lambda g: not undirected_graph_has_odd_automorphism(g), undirected_graph_generate(*key, connected=connected, biconnected=biconnected, min_degree=min_degree))))
 
     def graph_to_key(self, graph):
         """
@@ -62,7 +62,7 @@ class UndirectedGraphComplexBasis(UndirectedGraphBasis):
 
         Either ``(None, 1)`` if the input ``graph`` is not in the span of the basis, or a tuple consisting of a key and a sign, where a key is a tuple consisting of the number of vertices, the number of edges, and the index of the graph in the list.
         """
-        g, _, sign = nauty_canonicalize(graph)
+        g, _, sign = undirected_graph_canonicalize(graph)
         v, e = len(g), len(g.edges())
         try:
             index = self._graphs[v,e].index(g)
@@ -113,7 +113,7 @@ class UndirectedGraphOperadBasis(UndirectedGraphBasis):
         """
         Initialize ``self``.
         """
-        self._graphs = keydefaultdict(lambda key: list(filter(lambda g: not nauty_has_odd_automorphism(g), nauty_generate(*key))))
+        self._graphs = keydefaultdict(lambda key: list(filter(lambda g: not undirected_graph_has_odd_automorphism(g), undirected_graph_generate(*key))))
 
     def graph_to_key(self, graph):
         """
@@ -127,7 +127,7 @@ class UndirectedGraphOperadBasis(UndirectedGraphBasis):
 
         Either ``(None, 1)`` if the input ``graph`` is not in the span of the basis, or a tuple consisting of a key and a sign, where a key is a tuple consisting of the number of vertices, the number of edges, the index of the graph in the list, followed by a permutation of vertices.
         """
-        g, undo_canonicalize, sign = nauty_canonicalize(graph)
+        g, undo_canonicalize, sign = undirected_graph_canonicalize(graph)
         v, e = len(g), len(g.edges())
         try:
             index = self._graphs[v,e].index(g)

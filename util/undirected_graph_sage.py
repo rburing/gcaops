@@ -6,7 +6,7 @@ from sage.graphs.graph_generators import GraphGenerators
 
 # TODO: cache
 
-def nauty_canonicalize(g):
+def undirected_graph_canonicalize(g):
     n = len(g)
     edges = g.edges()
     G, sigma = Graph([list(range(n)), edges]).canonical_label(certificate=True)
@@ -18,7 +18,7 @@ def nauty_canonicalize(g):
         undo_canonicalize[v] = k
     return UndirectedGraph(n, list(new_edges)), undo_canonicalize, selection_sort(index_permutation)
 
-def nauty_has_odd_automorphism(g):
+def undirected_graph_has_odd_automorphism(g):
     n = len(g)
     edges = g.edges()
     G = Graph([list(range(n)), edges])
@@ -29,7 +29,7 @@ def nauty_has_odd_automorphism(g):
             return True
     return False
 
-def nauty_generate(num_vertices, num_edges, connected=None, biconnected=None, min_degree=0):
+def undirected_graph_generate(num_vertices, num_edges, connected=None, biconnected=None, min_degree=0):
     args = "{} {}:{}".format(num_vertices, num_edges, num_edges)
     if connected:
         args += " -c"
