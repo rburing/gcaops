@@ -1,5 +1,6 @@
 from graph.undirected_graph import UndirectedGraph
 from util.permutation import selection_sort
+import sage.all # make SageMath work when called from Python
 from sage.graphs.graph import Graph
 from sage.graphs.graph_generators import GraphGenerators
 
