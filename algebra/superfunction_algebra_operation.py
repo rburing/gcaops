@@ -3,6 +3,8 @@ from .tensor_product import TensorProduct
 from functools import reduce
 import operator
 
+# TODO: bracket on the space of operations, sum of operations.
+
 class SuperfunctionAlgebraOperation(ABC):
     """
     An n-ary multi-linear operation acting on a SuperfunctionAlgebra.
@@ -80,21 +82,27 @@ class SuperfunctionAlgebraUndirectedGraphOperation(SuperfunctionAlgebraOperation
             new_terms = []
             for k in range(len(terms)):
                 term0 = terms[k]
-                left_sign = 1 if sum(term0[j].degree() for j in range(e[1])) % 2 == 0 else -1
-                right_sign = 1 if sum(term0[j].degree() for j in range(e[0])) % 2 == 0 else -1
+                if 0 in term0:
+                    continue
                 for k in range(self._codomain.ngens()):
-                    if 0 in term0:
-                        continue
-                    left_term = [f.copy() for f in term0]
-                    left_term[e[0]] = left_term[e[0]].diff(evens[k])
-                    left_term[e[1]] = left_sign * left_term[e[1]].diff(odds[k])
-                    if not 0 in left_term:
-                        new_terms.append(left_term)
-                    right_term = [f.copy() for f in term0]
-                    right_term[e[0]] = right_sign * right_term[e[0]].diff(odds[k])
-                    right_term[e[1]] = right_term[e[1]].diff(evens[k])
-                    if not 0 in right_term:
-                        new_terms.append(right_term)
+                    left_odd_derivative = term0[e[1]].diff(odds[k])
+                    if left_odd_derivative != 0:
+                        left_even_derivative = term0[e[0]].diff(evens[k])
+                        if left_even_derivative != 0:
+                            left_term = [f.copy() for f in term0]
+                            left_sign = 1 if sum(term0[j].degree() for j in range(e[1])) % 2 == 0 else -1
+                            left_term[e[1]] = left_sign * left_odd_derivative
+                            left_term[e[0]] = left_even_derivative
+                            new_terms.append(left_term)
+                    right_odd_derivative = term0[e[0]].diff(odds[k])
+                    if right_odd_derivative != 0:
+                        right_even_derivative = term0[e[1]].diff(evens[k])
+                        if right_even_derivative != 0:
+                            right_term = [f.copy() for f in term0]
+                            right_sign = 1 if sum(term0[j].degree() for j in range(e[0])) % 2 == 0 else -1
+                            right_term[e[0]] = right_sign * right_odd_derivative
+                            right_term[e[1]] = right_even_derivative
+                            new_terms.append(right_term)
             terms = new_terms
         return sum(reduce(operator.mul, term) for term in terms)
 
