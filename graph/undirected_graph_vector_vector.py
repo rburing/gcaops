@@ -182,6 +182,12 @@ class UndirectedGraphVector_vector:
                             terms.append([user_coeff*victim_coeff, term])
         return self._parent(terms)
 
+    def vector(self, vertices, edges):
+        """
+        Return the vector of coefficients of graphs with the given number of ``vertices`` and ``edges``.
+        """
+        return self._vectors[vertices, edges]
+
 class UndirectedGraphModule_vector:
     """
     Module spanned by undirected graphs (with elements stored as dictionaries of vectors).
