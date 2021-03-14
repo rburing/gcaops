@@ -37,6 +37,9 @@ def undirected_graph_generate(num_vertices, num_edges, connected=None, biconnect
         args += " -C"
     if min_degree != 0:
         args += " -d{}".format(min_degree)
-    for G in GraphGenerators().nauty_geng(args):
-        G = G.canonical_label()
-        yield UndirectedGraph(num_vertices, list(G.edges(labels=False)))
+    try:
+        for G in GraphGenerators().nauty_geng(args):
+            G = G.canonical_label()
+            yield UndirectedGraph(num_vertices, list(G.edges(labels=False)))
+    except ValueError: # impossible values also errors
+        pass
