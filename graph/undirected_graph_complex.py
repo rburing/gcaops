@@ -1,16 +1,16 @@
 from .undirected_graph import UndirectedGraph
-from .undirected_graph_vector import UndirectedGraphVector, UndirectedGraphModule
+from .undirected_graph_vector import UndirectedGraphVector_dict, UndirectedGraphModule_dict
 from .undirected_graph_basis import UndirectedGraphComplexBasis
 
-class UndirectedGraphCochain(UndirectedGraphVector):
+class UndirectedGraphCochain_dict(UndirectedGraphVector_dict):
     """
-    Cochain of an UndirectedGraphComplex.
+    Cochain of an UndirectedGraphComplex (stored as a dictionary).
     """
     def __init__(self, parent, vector):
         """
         Initialize this graph cochain.
         """
-        assert isinstance(parent, UndirectedGraphComplex)
+        assert isinstance(parent, UndirectedGraphComplex_dict)
         super().__init__(parent, vector)
 
     def bracket(self, other):
@@ -28,9 +28,9 @@ class UndirectedGraphCochain(UndirectedGraphVector):
         stick = self._parent(UndirectedGraph(2,[(0,1)]))
         return stick.bracket(self)
 
-class UndirectedGraphComplex(UndirectedGraphModule):
+class UndirectedGraphComplex_dict(UndirectedGraphModule_dict):
     """
-    Undirected graph complex.
+    Undirected graph complex (with elements stored as dictionaries).
     """
     def __init__(self, base_ring, connected=None, biconnected=None, min_degree=0):
         """
@@ -38,10 +38,16 @@ class UndirectedGraphComplex(UndirectedGraphModule):
         """
         graph_basis = UndirectedGraphComplexBasis(connected=connected, biconnected=biconnected, min_degree=min_degree)
         super().__init__(base_ring, graph_basis)
-        self.element_class = UndirectedGraphCochain
+        self.element_class = UndirectedGraphCochain_dict
 
     def __repr__(self):
         """
         Return a string representation of this graph complex.
         """
         return 'Undirected graph complex over {} with {}'.format(self._base_ring, self._graph_basis)
+
+def UndirectedGraphComplex(base_ring, **kwds):
+    """
+    Return the undirected graph complex over ``base_ring`` with the given properties.
+    """
+    return UndirectedGraphComplex_dict(base_ring, **kwds)

@@ -3,9 +3,9 @@ from .undirected_graph_basis import UndirectedGraphBasis
 from collections import defaultdict
 from itertools import product
 
-class UndirectedGraphVector:
+class UndirectedGraphVector_dict:
     """
-    Vector representing a linear combination of undirected graphs.
+    Vector representing a linear combination of undirected graphs (stored as a dictionary).
     """
     def __init__(self, parent, vector):
         """
@@ -190,7 +190,7 @@ class UndirectedGraphVector:
                     terms.append([user_coeff*victim_coeff, term])
         return self._parent(terms)
 
-class UndirectedGraphModule:
+class UndirectedGraphModule_dict:
     """
     Module spanned by undirected graphs.
     """
@@ -208,7 +208,7 @@ class UndirectedGraphModule:
         if not isinstance(graph_basis, UndirectedGraphBasis):
             raise ValueError('graph_basis must be UndirectedGraphBasis')
         self._graph_basis = graph_basis
-        self.element_class = UndirectedGraphVector
+        self.element_class = UndirectedGraphVector_dict
 
     def base_ring(self):
         """
