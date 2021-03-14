@@ -226,6 +226,12 @@ class UndirectedGraphModule_vector:
         """
         return 'Module over {} with {}'.format(self._base_ring, self._graph_basis)
 
+    def zero(self):
+        """
+        Return the zero vector in this module.
+        """
+        return self.element_class(self, {})
+
     def __call__(self, arg):
         """
         Convert ``arg`` into an element of this module.
@@ -235,11 +241,11 @@ class UndirectedGraphModule_vector:
             if key is not None:
                 bi_grading = key[:2]
                 index = key[2]
-                v = self.element_class(self, {})
+                v = self.zero()
                 v._vectors[bi_grading][index] = self.base_ring().one() * sign
                 return v
             else: # must be zero
-                return self.element_class(self, {})
+                return self.zero()
         elif isinstance(arg, list):
             v = self.element_class(self, {})
             for term in arg:
@@ -252,4 +258,4 @@ class UndirectedGraphModule_vector:
                     v._vectors[bi_grading][index] += coeff
             return v
         elif arg == 0:
-            return self.element_class(self, {})
+            return self.zero()
