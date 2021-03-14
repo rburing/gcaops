@@ -229,6 +229,12 @@ class UndirectedGraphModule_dict:
         """
         return 'Module over {} with {}'.format(self._base_ring, self._graph_basis)
 
+    def zero(self):
+        """
+        Return the zero vector in this module.
+        """
+        return self.element_class(self, {})
+
     def __call__(self, arg):
         """
         Convert ``arg`` into an element of this module.
@@ -238,9 +244,9 @@ class UndirectedGraphModule_dict:
             if key is not None:
                 return self.element_class(self, { key : self.base_ring().one() * sign })
             else: # must be zero
-                return self.element_class(self, {})
+                return self.zero()
         elif isinstance(arg, list):
-            v = self.element_class(self, {})
+            v = self.zero()
             for term in arg:
                 coeff, graph = term
                 key, sign = self._graph_basis.graph_to_key(graph)
@@ -249,4 +255,4 @@ class UndirectedGraphModule_dict:
                     v._vector[key] += coeff
             return v
         elif arg == 0:
-            return self.element_class(self, {})
+            return self.zero()
