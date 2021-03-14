@@ -17,6 +17,7 @@ class UndirectedGraphVector_dict:
 
         - ``vector`` -- a dictionary, representing a sparse vector of coefficients with respect to the basis of ``parent``
         """
+        assert isinstance(parent, UndirectedGraphModule_dict)
         self._parent = parent
         self._vector = defaultdict(lambda: self._parent.base_ring().zero())
         for key in vector:
