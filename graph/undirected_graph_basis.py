@@ -12,7 +12,7 @@ class UndirectedGraphBasis(ABC):
     @abstractmethod
     def graph_to_key(self, graph):
         """
-        Return a tuple consisting of the key in ``self`` and the sign factor such that ``graph`` equals the sign times the graph identified by the key.
+        Return a tuple consisting of the key in this basis and the sign factor such that ``graph`` equals the sign times the graph identified by the key.
 
         INPUT:
 
@@ -27,13 +27,13 @@ class UndirectedGraphBasis(ABC):
 
         INPUT:
 
-        - ``key`` -- a key in ``self``
+        - ``key`` -- a key in this basis
         """
         pass
 
     def __repr__(self):
         """
-        Return a string representation of ``self``.
+        Return a string representation of this basis.
         """
         return 'Basis consisting of undirected graphs'
 
@@ -43,7 +43,7 @@ class UndirectedGraphComplexBasis(UndirectedGraphBasis):
     """
     def __init__(self, connected=None, biconnected=None, min_degree=0):
         """
-        Initialize ``self``.
+        Initialize this basis.
         """
         self._connected = connected
         self._biconnected = biconnected
@@ -52,7 +52,7 @@ class UndirectedGraphComplexBasis(UndirectedGraphBasis):
 
     def graph_to_key(self, graph):
         """
-        Return a tuple consisting of the key in ``self`` and the sign factor such that ``graph`` equals the sign times the graph identified by the key.
+        Return a tuple consisting of the key in this basis and the sign factor such that ``graph`` equals the sign times the graph identified by the key.
 
         INPUT:
 
@@ -76,7 +76,7 @@ class UndirectedGraphComplexBasis(UndirectedGraphBasis):
 
         INPUT:
 
-        - ``key`` -- a key in ``self``
+        - ``key`` -- a key in this basis
 
         OUTPUT:
 
@@ -90,7 +90,7 @@ class UndirectedGraphComplexBasis(UndirectedGraphBasis):
 
     def __repr__(self):
         """
-        Return a string representation of ``self``.
+        Return a string representation of this basis.
         """
         filters = []
         if self._connected:
@@ -111,13 +111,13 @@ class UndirectedGraphOperadBasis(UndirectedGraphBasis):
     """
     def __init__(self):
         """
-        Initialize ``self``.
+        Initialize this basis.
         """
         self._graphs = keydefaultdict(lambda key: list(filter(lambda g: not undirected_graph_has_odd_automorphism(g), undirected_graph_generate(*key))))
 
     def graph_to_key(self, graph):
         """
-        Return a tuple consisting of the key in ``self`` and the sign factor such that ``graph`` equals the sign times the graph identified by the key.
+        Return a tuple consisting of the key in this basis and the sign factor such that ``graph`` equals the sign times the graph identified by the key.
 
         INPUT:
 
@@ -141,7 +141,7 @@ class UndirectedGraphOperadBasis(UndirectedGraphBasis):
 
         INPUT:
 
-        - ``key`` -- a key in ``self``
+        - ``key`` -- a key in this basis
 
         OUTPUT:
 
@@ -159,6 +159,6 @@ class UndirectedGraphOperadBasis(UndirectedGraphBasis):
 
     def __repr__(self):
         """
-        Return a string representation of ``self``.
+        Return a string representation of this basis.
         """
         return 'Basis consisting of representatives of isomorphism classes of labeled undirected graphs with no automorphisms that induce an odd permutation on edges'

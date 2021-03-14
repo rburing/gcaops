@@ -14,7 +14,7 @@ class Superfunction:
     """
     def __init__(self, parent, monomial_coefficients):
         """
-        Initialize ``self``.
+        Initialize this superfunction.
 
         INPUT:
 
@@ -35,7 +35,7 @@ class Superfunction:
 
     def __repr__(self):
         """
-        Return a string representation of ``self``.
+        Return a string representation of this superfunction.
         """
         terms = []
         for degree in reversed(sorted(self._monomial_coefficients.keys())):
@@ -57,17 +57,17 @@ class Superfunction:
 
     def parent(self):
         """
-        Return the parent SuperfunctionAlgebra that ``self`` belongs to.
+        Return the parent SuperfunctionAlgebra that this superfunction belongs to.
         """
         return self._parent
 
     def homogeneous_part(self, degree):
         """
-        Return the homogeneous part of ``self`` of total degree ``degree`` in the odd coordinates.
+        Return the homogeneous part of this superfunction of total degree ``degree`` in the odd coordinates.
 
         NOTE::
 
-            Returns a Superfunction whose homogeneous component of degree ``degree`` is a *reference* to the respective component of ``self``.
+            Returns a Superfunction whose homogeneous component of degree ``degree`` is a *reference* to the respective component of this superfunction.
         """
         return self.__class__(self._parent, { degree : self._monomial_coefficients[degree] })
 
@@ -82,7 +82,7 @@ class Superfunction:
 
     def copy(self):
         """
-        Return a copy of ``self``.
+        Return a copy of this superfunction.
         """
         return self.map_coefficients(lambda c: c)
 
@@ -90,13 +90,13 @@ class Superfunction:
 
     def __neg__(self):
         """
-        Return the negative of ``self``.
+        Return the negative of this superfunction.
         """
         return self.map_coefficients(lambda c: -c)
 
     def __add__(self, other):
         """
-        Return ``self`` added to ``other``.
+        Return this superfunction added to ``other``.
         """
         monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
         for degree in self._monomial_coefficients:
@@ -114,13 +114,13 @@ class Superfunction:
 
     def __radd__(self, other):
         """
-        Return ``other`` added to ``self``.
+        Return ``other`` added to this superfunction.
         """
         return self + other
 
     def __sub__(self, other):
         """
-        Return ``self`` minus ``other``.
+        Return this superfunction minus ``other``.
         """
         monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
         for degree in self._monomial_coefficients:
@@ -138,13 +138,13 @@ class Superfunction:
 
     def __rsub__(self, other):
         """
-        Return ``other`` minus ``self``.
+        Return ``other`` minus this superfunction.
         """
         return -(self - other)
 
     def __mul__(self, other):
         """
-        Return ``self`` multiplied by ``other``.
+        Return this superfunction multiplied by ``other``.
         """
         monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
         if isinstance(other, self.__class__):
@@ -169,24 +169,24 @@ class Superfunction:
 
     def __rmul__(self, other):
         """
-        Return ``other`` multiplied by ``self``.
+        Return ``other`` multiplied by this superfunction.
 
         NOTE::
 
-            This assumes that ``other`` commutes with ``self``.
+            This assumes that ``other`` commutes with this superfunction.
             It is justified because this function only gets called when ``other`` is even.
         """
         return self * other
 
     def __truediv__(self, other):
         """
-        Return ``self`` divided by ``other``.
+        Return this superfunction divided by ``other``.
         """
         return self.map_coefficients(lambda c: c / other)
 
     def __eq__(self, other):
         """
-        Return ``True`` if ``self`` equals ``other`` and ``False`` otherwise.
+        Return ``True`` if this superfunction equals ``other`` and ``False`` otherwise.
         """
         difference = self - other
         for degree in difference._monomial_coefficients:
@@ -197,7 +197,7 @@ class Superfunction:
 
     def degree(self):
         """
-        Return the degree of ``self`` as a polynomial in the odd coordinates.
+        Return the degree of this superfunction as a polynomial in the odd coordinates.
         """
         for d in reversed(sorted(self._monomial_coefficients.keys())):
             for k in range(len(self._monomial_coefficients[d])):
@@ -207,7 +207,7 @@ class Superfunction:
 
     def derivative(self, *args):
         """
-        Return the derivative of ``self`` with respect to ``args``.
+        Return the derivative of this superfunction with respect to ``args``.
 
         INPUT:
 
@@ -251,7 +251,7 @@ class Superfunction:
 
     def bracket(self, other):
         """
-        Return the Schouten bracket (odd Poisson bracket) of ``self`` with ``other``.
+        Return the Schouten bracket (odd Poisson bracket) of this superfunction with ``other``.
         """
         if len(self._monomial_coefficients.keys()) == 1: # first argument is homogeneous
             degree = next(iter(self._monomial_coefficients))
@@ -270,7 +270,7 @@ class SuperfunctionAlgebra:
     """
     def __init__(self, base_ring, even_coordinates=None, names=None, simplify=lambda x: x, is_zero=lambda x: x.is_zero()):
         """
-        Initialize ``self``.
+        Initialize this superfunction algebra.
 
         INPUT:
 
@@ -314,13 +314,13 @@ class SuperfunctionAlgebra:
 
     def __repr__(self):
         """
-        Return a string representation of ``self``.
+        Return a string representation of this superfunction algebra.
         """
         return "Superfunction algebra over {} with even coordinates {} and odd coordinates {}".format(self._base_ring, self._even_coordinates, self._gens)
 
     def __call__(self, arg):
         """
-        Return ``arg`` converted into an element of ``self``.
+        Return ``arg`` converted into an element of this superfunction algebra.
         """
         if arg in self._base_ring:
             return self.element_class(self, { 0 : [arg]})
@@ -331,37 +331,37 @@ class SuperfunctionAlgebra:
 
     def base_ring(self):
         """
-        Return the base ring of ``self``, consisting of (even, degree 0) functions.
+        Return the base ring of this superfunction algebra, consisting of (even, degree 0) functions.
         """
         return self._base_ring
 
     def even_coordinates(self):
         """
-        Return the even coordinates in the base ring of ``self``.
+        Return the even coordinates in the base ring of this superfunction algebra.
         """
         return self._even_coordinates
 
     def even_coordinate(self, i):
         """
-        Return the ``i``th even coordinate in the base ring of ``self``.
+        Return the ``i``th even coordinate in the base ring of this superfunction algebra.
         """
         return self._even_coordinates[i]
 
     def ngens(self):
         """
-        Return the number of odd coordinates of ``self``.
+        Return the number of odd coordinates of this superfunction algebra.
         """
         return self.__ngens
 
     def _first_ngens(self, n):
         """
-        Return the first ``n`` odd coordinates of ``self``.
+        Return the first ``n`` odd coordinates of this superfunction algebra.
         """
         return self._gens[:n]
 
     def gens(self):
         """
-        Return the tuple of odd coordinates of ``self``.
+        Return the tuple of odd coordinates of this superfunction algebra.
         """
         return self._gens
 
@@ -369,7 +369,7 @@ class SuperfunctionAlgebra:
 
     def gen(self, i):
         """
-        Return the ``i``th odd coordinate of ``self``.
+        Return the ``i``th odd coordinate of this superfunction algebra.
         """
         return self._gens[i]
 
@@ -432,19 +432,19 @@ class SuperfunctionAlgebra:
 
     def tensor_power(self, n):
         """
-        Return the ``n``th tensor power of ``self``.
+        Return the ``n``th tensor power of this superfunction algebra.
         """
         return self._tensor_powers[n]
 
     def schouten_bracket(self):
         """
-        Return the Schouten bracket on ``self``.
+        Return the Schouten bracket (odd Poisson bracket) on this superfunction algebra.
         """
         return self._schouten_bracket
 
     def graph_operation(self, graph_vector):
         """
-        Return the operation on ``self`` defined by ``graph_vector``.
+        Return the operation (on this superfunction algebra) defined by ``graph_vector``.
 
         ASSUMPTION:
 
@@ -455,7 +455,7 @@ class SuperfunctionAlgebra:
 
     def symmetric_graph_operation(self, graph_vector):
         """
-        Return the graded symmetric operation on ``self`` defined by ``graph_vector``.
+        Return the graded symmetric operation (on this superfunction algebra) defined by ``graph_vector``.
 
         ASSUMPTION:
 

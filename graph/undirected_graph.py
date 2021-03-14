@@ -7,7 +7,7 @@ class UndirectedGraph:
     """
     def __init__(self, num_vertices, edges):
         """
-        Initialize ``self``.
+        Initialize this undirected graph.
 
         INPUT:
 
@@ -31,37 +31,37 @@ class UndirectedGraph:
 
     def __repr__(self):
         """
-        Return a string representation of ``self``.
+        Return a string representation of this graph.
         """
         return 'UndirectedGraph({}, {})'.format(self._num_vertices, self._edges)
 
     def __len__(self):
         """
-        Return the number of vertices of ``self``.
+        Return the number of vertices of this graph.
         """
         return self._num_vertices
 
     def __eq__(self, other):
         """
-        Return ``True`` if ``self`` equals ``other``.
+        Return ``True`` if this graph equals ``other``.
         """
         return isinstance(other, self.__class__) and self._num_vertices == other._num_vertices and self._edges == other._edges
 
     def edges(self):
         """
-        Return the list of edges of ``self``.
+        Return the list of edges of this graph.
         """
         return self._edges
 
     def canonicalize_edges(self):
         """
-        Lexicographically order the edges of ``self`` and return the sign of that edge permutation.
+        Lexicographically order the edges of this graph and return the sign of that edge permutation.
         """
         return selection_sort(self._edges)
 
     def relabeled(self, relabeling):
         """
-        Return a vertex relabeling of ``self``.
+        Return a vertex relabeling of this graph.
         """
         new_edges = [(relabeling[a], relabeling[b]) for (a,b) in self._edges]
         # constructor takes care of canonicalizing individual edges:

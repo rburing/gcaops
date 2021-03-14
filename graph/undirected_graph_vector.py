@@ -9,7 +9,7 @@ class UndirectedGraphVector:
     """
     def __init__(self, parent, vector):
         """
-        Initialize ``self``.
+        Initialize this graph vector.
 
         INPUT:
 
@@ -24,7 +24,7 @@ class UndirectedGraphVector:
 
     def __repr__(self):
         """
-        Return a string representation of ``self``.
+        Return a string representation of this graph vector.
         """
         terms = []
         for key in self._vector:
@@ -44,13 +44,13 @@ class UndirectedGraphVector:
 
     def parent(self):
         """
-        Return the parent UndirectedGraphModule that ``self`` belongs to.
+        Return the parent UndirectedGraphModule that this graph vector belongs to.
         """
         return self._parent
 
     def copy(self):
         """
-        Return a copy of ``self``.
+        Return a copy of this graph vector.
         """
         return self.__class__(self._parent, self._vector)
 
@@ -58,13 +58,13 @@ class UndirectedGraphVector:
 
     def __neg__(self):
         """
-        Return the negative of ``self``.
+        Return the negative of this graph vector.
         """
         return self.__class__(self._parent, {k : -v for (k,v) in self._vector.items()})
 
     def __add__(self, other):
         """
-        Return ``self`` added to ``other``.
+        Return this graph vector added to ``other``.
         """
         if isinstance(other, self.__class__):
             v = self._vector.copy()
@@ -76,13 +76,13 @@ class UndirectedGraphVector:
 
     def __radd__(self, other):
         """
-        Return ``other`` added to ``self``.
+        Return ``other`` added to this graph vector.
         """
         return self + other
 
     def __sub__(self, other):
         """
-        Return ``other`` subtracted from ``self``.
+        Return ``other`` subtracted from this graph vector.
         """
         if isinstance(other, self.__class__):
             v = self._vector.copy()
@@ -94,13 +94,13 @@ class UndirectedGraphVector:
 
     def __rsub__(self, other):
         """
-        Return ``self`` subtracted from ``other``.
+        Return this graph vector subtracted from ``other``.
         """
         return -(self - other)
 
     def __mul__(self, other):
         """
-        Return ``self`` multiplied by ``other``.
+        Return this graph vector multiplied by ``other``.
         """
         v = self._vector.copy()
         if other in self._parent.base_ring():
@@ -112,13 +112,13 @@ class UndirectedGraphVector:
 
     def __rmul__(self, other):
         """
-        Return ``other`` multiplied by ``self``.
+        Return ``other`` multiplied by this graph vector.
         """
         return self * other
 
     def __eq__(self, other):
         """
-        Return ``True`` if ``self`` is equal to ``other`` and ``False`` otherwise.
+        Return ``True`` if this graph vector is equal to ``other`` and ``False`` otherwise.
         """
         difference = self - other
         for k in difference._vector:
@@ -128,17 +128,17 @@ class UndirectedGraphVector:
 
     def bi_gradings(self):
         """
-        Return the set of tuples ``(v,e)`` such that ``self`` contains terms with ``v`` vertices and ``e`` edges.
+        Return the set of tuples ``(v,e)`` such that this graph vector contains terms with ``v`` vertices and ``e`` edges.
         """
         return set((key[0],key[1]) for key in self._vector)
 
     def nvertices(self):
         """
-        Return the number of vertices in each graph in ``self``.
+        Return the number of vertices in each graph in this graph vector.
 
         ASSUMPTIONS:
 
-        Assumes all graphs in ``self`` have the same number of vertices.
+        Assumes all graphs in this graph vector have the same number of vertices.
         """
         for key in self._vector:
             v, e = key[:2]
@@ -147,7 +147,7 @@ class UndirectedGraphVector:
 
     def homogeneous_part(self, vertices, edges):
         """
-        Return the homogeneous part of ``self`` consisting only of terms with the given number of ``vertices`` and ``edges``.
+        Return the homogeneous part of this graph vector consisting only of terms with the given number of ``vertices`` and ``edges``.
         """
         v = {}
         for key in self._vector:
@@ -157,7 +157,7 @@ class UndirectedGraphVector:
     
     def insertion(self, position, other):
         """
-        Return the insertion of ``other`` into ``self`` at the vertex ``position``.
+        Return the insertion of ``other`` into this graph vector at the vertex ``position``.
         """
         # TODO: cache when self and other are in normal form. when not, use symmetric group action + operad axioms to deduce result.
         terms = []
@@ -196,7 +196,7 @@ class UndirectedGraphModule:
     """
     def __init__(self, base_ring, graph_basis):
         """
-        Initialize ``self``.
+        Initialize this undirected graph module.
 
         INPUT:
 
@@ -212,25 +212,25 @@ class UndirectedGraphModule:
 
     def base_ring(self):
         """
-        Return the base ring of ``self``.
+        Return the base ring of this module.
         """
         return self._base_ring
 
     def basis(self):
         """
-        Return the basis of ``self``.
+        Return the basis of this module.
         """
         return self._graph_basis
 
     def __repr__(self):
         """
-        Return a string representation of ``self``.
+        Return a string representation of this module.
         """
         return 'Module over {} with {}'.format(self._base_ring, self._graph_basis)
 
     def __call__(self, arg):
         """
-        Convert ``arg`` into an element of ``self``.
+        Convert ``arg`` into an element of this module.
         """
         if isinstance(arg, UndirectedGraph):
             key, sign = self._graph_basis.graph_to_key(arg)

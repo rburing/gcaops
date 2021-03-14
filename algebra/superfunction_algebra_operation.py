@@ -11,21 +11,21 @@ class SuperfunctionAlgebraOperation(ABC):
     """
     def __init__(self, domain, codomain):
         """
-        Initialize ``self``.
+        Initialize this operation.
         """
         self._domain = domain
         self._codomain = codomain
 
     def __repr__(self):
         """
-        Return a string representation of ``self``.
+        Return a string representation of this operation.
         """
         return 'Operation of arity {} on {}'.format(self._domain.nfactors(), self._codomain)
 
     @abstractmethod
     def __call__(self, *arg):
         """
-        Return the evaluation of ``self`` at ``arg``.
+        Return the evaluation of this operation at ``arg``.
         """
         pass
 
@@ -35,19 +35,19 @@ class SuperfunctionAlgebraSchoutenBracket(SuperfunctionAlgebraOperation):
     """
     def __init__(self, domain, codomain):
         """
-        Initialize ``self``.
+        Initialize this Schouten bracket.
         """
         super().__init__(domain, codomain)
 
     def __repr__(self):
         """
-        Return a string representation of ``self``.
+        Return a string representation of this Schouten bracket.
         """
         return 'Schouten bracket on {}'.format(self._codomain)
 
     def __call__(self, *arg):
         """
-        Return the evaluation of ``self`` at ``arg``.
+        Return the evaluation of this Schouten bracket at ``arg``.
         """
         if len(arg) == 2 and all(isinstance(arg[k], self._domain.factor(k).element_class) and arg[k].parent() is self._domain.factor(k) for k in range(2)):
             return arg[0].bracket(arg[1])
@@ -62,7 +62,7 @@ class SuperfunctionAlgebraUndirectedGraphOperation(SuperfunctionAlgebraOperation
     """
     def __init__(self, domain, codomain, graph_vector):
         """
-        Initialize ``self``.
+        Initialize this operation.
         """
         super().__init__(domain, codomain)
         self._graph_vector = graph_vector
@@ -108,7 +108,7 @@ class SuperfunctionAlgebraUndirectedGraphOperation(SuperfunctionAlgebraOperation
 
     def __call__(self, *arg):
         """
-        Return the evaluation of ``self`` at ``arg``.
+        Return the evaluation of this operation at ``arg``.
 
         ASSUMPTION:
 
@@ -128,7 +128,7 @@ class SuperfunctionAlgebraSymmetricUndirectedGraphOperation(SuperfunctionAlgebra
     """
     def __call__(self, *arg):
         """
-        Return the evaluation of ``self`` at `arg``.
+        Return the evaluation of this operation at `arg``.
 
         ASSUMPTION:
 

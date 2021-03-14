@@ -7,7 +7,7 @@ class UndirectedGraphOperation(UndirectedGraphVector):
     """
     def __init__(self, parent, vector):
         """
-        Initialize ``self``.
+        Initialize this graph operation.
         """
         assert isinstance(parent, UndirectedGraphOperad)
         super().__init__(parent, vector)
@@ -18,7 +18,7 @@ class UndirectedGraphOperad(UndirectedGraphModule):
     """
     def __init__(self, base_ring):
         """
-        Initialize ``self``.
+        Initialize this graph operad.
         """
         graph_basis = UndirectedGraphOperadBasis()
         super().__init__(base_ring, graph_basis)
@@ -26,6 +26,6 @@ class UndirectedGraphOperad(UndirectedGraphModule):
 
     def __repr__(self):
         """
-        Return a string representation of ``self``.
+        Return a string representation of this graph operad.
         """
         return 'Operad of undirected graphs over {}'.format(self._base_ring)

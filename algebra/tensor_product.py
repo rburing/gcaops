@@ -9,7 +9,7 @@ class TensorProductElement:
     """
     def __init__(self, parent, terms):
         """
-        Initialize ``self``.
+        Initialize this tensor product element.
 
         INPUT:
 
@@ -29,29 +29,29 @@ class TensorProductElement:
 
     def __repr__(self):
         """
-        Return a string representation of ``self``.
+        Return a string representation of this tensor product element.
         """
         return ' + '.join('⊗'.join('({})'.format(factor) for factor in term) for term in self._terms)
 
     def parent(self):
         """
-        Return the parent TensorProduct that ``self`` belongs to.
+        Return the parent TensorProduct that this tensor product element belongs to.
         """
         return self._parent
 
     def terms(self):
         """
-        Return the list of terms of ``self``.
+        Return the list of terms of this tensor product element.
         """
         return self._terms
 
     def graded_symmetrization(self):
         """
-        Return the graded symmetrization of ``self``.
+        Return the graded symmetrization of this tensor product element.
 
         ASSUMPTION:
 
-        Assumes each factor in each term of ``self`` has a ``degree`` method and is homogeneous of that degree.
+        Assumes each factor in each term of this tensor product element has a ``degree`` method and is homogeneous of that degree.
         """
         n = self._parent.nfactors()
         prefactor_inverse = factorial(n)
@@ -96,7 +96,7 @@ class TensorProduct:
     """
     def __init__(self, factors):
         """
-        Initialize ``self``.
+        Initialize this tensor product.
 
         INPUT:
 
@@ -109,31 +109,31 @@ class TensorProduct:
 
     def __repr__(self):
         """
-        Return a string representation of ``self``.
+        Return a string representation of this tensor product.
         """
         return ' ⊗ '.join(repr(factor) for factor in self._factors)
 
     def factors(self):
         """
-        Return the list of factors of ``self``.
+        Return the list of factors of this tensor product.
         """
         return self._factors
 
     def nfactors(self):
         """
-        Return the number of factors of ``self``.
+        Return the number of factors of this tensor product.
         """
         return len(self._factors)
 
     def factor(self, index):
         """
-        Return the ``index``th factor of ``self``.
+        Return the ``index``th factor of this tensor product.
         """
         return self._factors[index]
 
     def __call__(self, arg):
         """
-        Return ``arg`` converted into an element of ``self``.
+        Return ``arg`` converted into an element of this tensor product.
         """
         if isinstance(arg, self.element_class) and arg.parent() == self:
             return arg
