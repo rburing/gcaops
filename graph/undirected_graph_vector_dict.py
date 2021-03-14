@@ -192,7 +192,7 @@ class UndirectedGraphVector_dict:
 
 class UndirectedGraphModule_dict:
     """
-    Module spanned by undirected graphs.
+    Module spanned by undirected graphs (with elements stored as dictionaries).
     """
     def __init__(self, base_ring, graph_basis):
         """
