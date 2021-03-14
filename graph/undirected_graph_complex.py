@@ -2,6 +2,7 @@ from .undirected_graph import UndirectedGraph
 from .undirected_graph_vector_dict import UndirectedGraphVector_dict, UndirectedGraphModule_dict
 from .undirected_graph_vector_vector import UndirectedGraphVector_vector, UndirectedGraphModule_vector
 from .undirected_graph_basis import UndirectedGraphComplexBasis
+from itertools import product
 
 class UndirectedGraphCochain_dict(UndirectedGraphVector_dict):
     """
@@ -26,8 +27,35 @@ class UndirectedGraphCochain_dict(UndirectedGraphVector_dict):
         Return the graph differential of this graph cochain.
         """
         # TODO: optimize
-        stick = self._parent(UndirectedGraph(2,[(0,1)]))
-        return stick.bracket(self)
+        terms = []
+        for user_key in self._vector:
+            user_coeff = self._vector[user_key]
+            if user_coeff.is_zero():
+                continue
+            user, user_sign = self._parent._graph_basis.key_to_graph(user_key)
+            user_coeff *= user_sign
+            vertices, edges = user_key[:2]
+            for position in range(vertices):
+                # relabel user (vertices > position are shifted to make room for stick)
+                user_edges = [[a + 1 if a > position else a, b + 1 if b > position else b] for (a,b) in user.edges()]
+                # relabel stick
+                stick_edges = [(position, position + 1)]
+                # find edges which are incident to position
+                incident = [(i,user_edges[i].index(position)) for i in range(len(user_edges)) if position in user_edges[i]]
+                # loop over all possible new endpoints (in stick) for these edges
+                for endpoints in product(range(2), repeat=len(incident)):
+                    # NOTE: skip creation of graphs with leaves:
+                    if endpoints.count(0) == 0 or endpoints.count(1) == 0:
+                        continue
+                    # TODO: skip handshakes, if all degrees > 2
+                    # redirect edges (which were incident to position) to stick
+                    for k in range(len(incident)):
+                        a, b = incident[k]
+                        user_edges[a][b] = position + endpoints[k]
+                    # NOTE: the convention is that stick edges go last:
+                    term = UndirectedGraph(len(user) + 1, [tuple(e) for e in user_edges] + stick_edges)
+                    terms.append([user_coeff, term])
+        return self._parent(terms)
 
 class UndirectedGraphComplex_dict(UndirectedGraphModule_dict):
     """
@@ -70,8 +98,33 @@ class UndirectedGraphCochain_vector(UndirectedGraphVector_vector):
         Return the graph differential of this graph cochain.
         """
         # TODO: cache and optimize
-        stick = self._parent(UndirectedGraph(2,[(0,1)]))
-        return stick.bracket(self)
+        terms = []
+        for (bi_grading, vector) in self._vectors.items():
+            for (user_idx, user_coeff) in vector.items():
+                user, user_sign = self._parent._graph_basis.key_to_graph(bi_grading + (user_idx,))
+                user_coeff *= user_sign
+                vertices, edges = bi_grading
+                for position in range(vertices):
+                    # relabel user (vertices > position are shifted to make room for stick)
+                    user_edges = [[a + 1 if a > position else a, b + 1 if b > position else b] for (a,b) in user.edges()]
+                    # relabel stick
+                    stick_edges = [(position, position + 1)]
+                    # find edges which are incident to position
+                    incident = [(i,user_edges[i].index(position)) for i in range(len(user_edges)) if position in user_edges[i]]
+                    # loop over all possible new endpoints (in stick) for these edges
+                    for endpoints in product(range(2), repeat=len(incident)):
+                        # NOTE: skip creation of graphs with leaves:
+                        if endpoints.count(0) == 0 or endpoints.count(1) == 0:
+                            continue
+                        # TODO: skip handshakes, if all degrees > 2
+                        # redirect edges (which were incident to position) to stick
+                        for k in range(len(incident)):
+                            a, b = incident[k]
+                            user_edges[a][b] = position + endpoints[k]
+                        # NOTE: the convention is that stick edges go last:
+                        term = UndirectedGraph(len(user) + 1, [tuple(e) for e in user_edges] + stick_edges)
+                        terms.append([user_coeff, term])
+        return self._parent(terms)
 
 class UndirectedGraphComplex_vector(UndirectedGraphModule_vector):
     """
