@@ -22,7 +22,7 @@ def undirected_graph_has_odd_automorphism(g):
     n = len(g)
     edges = g.edges()
     G = Graph([list(range(n)), edges])
-    for sigma in G.automorphism_group().gens():
+    for sigma in G.automorphism_group().gens(): # NOTE: it suffices to check generators
         edge_permutation = [tuple(sorted([sigma(edge[0]),sigma(edge[1])])) for edge in edges]
         index_permutation = [edges.index(e) for e in edge_permutation]
         if selection_sort(index_permutation) == -1:
