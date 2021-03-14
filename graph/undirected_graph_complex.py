@@ -1,5 +1,5 @@
 from .undirected_graph import UndirectedGraph
-from .undirected_graph_vector import UndirectedGraphVector_dict, UndirectedGraphModule_dict
+from .undirected_graph_vector_dict import UndirectedGraphVector_dict, UndirectedGraphModule_dict
 from .undirected_graph_basis import UndirectedGraphComplexBasis
 
 class UndirectedGraphCochain_dict(UndirectedGraphVector_dict):
