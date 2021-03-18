@@ -269,7 +269,7 @@ class SuperfunctionAlgebra:
     It is a free module over the base ring with an ordered basis consisting of sorted monomials in the odd coordinates.
     The elements encode skew-symmetric multi-derivations of the base ring, or multi-vectors.
     """
-    def __init__(self, base_ring, even_coordinates=None, names=None, simplify=lambda x: x, is_zero=lambda x: x.is_zero()):
+    def __init__(self, base_ring, even_coordinates=None, names='xi', simplify=lambda x: x, is_zero=lambda x: x.is_zero()):
         """
         Initialize this superfunction algebra.
 
@@ -279,7 +279,7 @@ class SuperfunctionAlgebra:
 
         - ``even_coordinates`` -- (default: ``None``) a list or tuple of elements of ``base_ring``; if none is provided, then it is set to ``base_ring.gens()``
 
-        - ``names`` -- (default: ``None``) a list or tuple of strings or a comma separated string, consisting of names for the odd coordinates; or a single string consisting of a prefix; if none is provided, then it is set to the prefix 'xi'
+        - ``names`` -- (default: ``'xi'``) a list or tuple of strings or a comma separated string, consisting of names for the odd coordinates; or a single string consisting of a prefix that will be used to generate a list of numbered names
 
         - ``simplify`` -- (default: ``lambda x: x``) a function that returns a simplification of an element of the base ring (will be used in each operation on elements that affects coefficients)
 
@@ -293,8 +293,6 @@ class SuperfunctionAlgebra:
             self._even_coordinates = base_ring.gens()
         else:
             raise ValueError('Even coordinates not specified and could not be determined from base ring')
-        if names is None:
-            names = 'xi'
         if isinstance(names, str):
             if ',' in names:
                 names = names.split(',')
