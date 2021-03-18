@@ -1,5 +1,6 @@
 from collections.abc import Iterable, MutableMapping
 from itertools import combinations
+from functools import reduce
 from util.permutation import selection_sort
 from util.misc import keydefaultdict
 from .superfunction_algebra_operation import SuperfunctionAlgebraSchoutenBracket
@@ -183,6 +184,12 @@ class Superfunction:
         Return this superfunction divided by ``other``.
         """
         return self.map_coefficients(lambda c: c / other)
+
+    def __pow__(self, exponent):
+        """
+        Return this superfunction raised to the power ``exponent``.
+        """
+        return reduce(lambda a,b: a*b, [self]*exponent, self._parent.base_ring().one())
 
     def __eq__(self, other):
         """
