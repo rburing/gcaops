@@ -62,6 +62,20 @@ class Superfunction:
         """
         return self._parent
 
+    def __getitem__(self, multi_index):
+        """
+        Return the coefficient of the monomial in the odd coordinates specified by ``multi_index``.
+        """
+        if not isinstance(multi_index, tuple):
+            multi_index = (multi_index,)
+        degree = len(multi_index)
+        sign, index = self._parent._monomial_index(multi_index)
+        if index is None:
+            value = self._parent.base_ring().zero()
+        else:
+            value = self._monomial_coefficients[degree][index]
+        return sign * value
+
     def homogeneous_part(self, degree):
         """
         Return the homogeneous part of this superfunction of total degree ``degree`` in the odd coordinates.
@@ -402,6 +416,19 @@ class SuperfunctionAlgebra:
         - ``degree`` -- a natural number
         """
         return len(self._basis[degree])
+
+    def _monomial_index(self, multi_index):
+        """
+        Return the sign and the index of the monomial in the basis.
+        """
+        degree = len(multi_index)
+        multi_index = list(multi_index)
+        sign = selection_sort(multi_index)
+        multi_index = tuple(multi_index)
+        if multi_index in self._basis[degree]:
+            return sign, self._basis[degree].index(tuple(multi_index))
+        else:
+            return 1, None
 
     def _mul_on_basis(self, degree1, k1, degree2, k2):
         """
