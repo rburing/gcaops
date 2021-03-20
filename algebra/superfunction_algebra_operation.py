@@ -104,7 +104,7 @@ class SuperfunctionAlgebraUndirectedGraphOperation(SuperfunctionAlgebraOperation
                             right_term[e[1]] = right_even_derivative
                             new_terms.append(right_term)
             terms = new_terms
-        return sum(reduce(operator.mul, term) for term in terms)
+        return sum((reduce(operator.mul, term) for term in terms), self._codomain.zero())
 
     def __call__(self, *arg):
         """
@@ -114,7 +114,7 @@ class SuperfunctionAlgebraUndirectedGraphOperation(SuperfunctionAlgebraOperation
 
         Assumes that each factor in each term of ``arg`` is homogeneous.
         """
-        result = 0
+        result = self._codomain.zero()
         for key in self._graph_vector._vector:
             g, sign = self._graph_vector.parent().basis().key_to_graph(key)
             c = self._graph_vector._vector[key]
