@@ -347,8 +347,14 @@ class SuperfunctionAlgebra:
         """
         if arg in self._base_ring:
             return self.element_class(self, { 0 : [arg]})
-        elif isinstance(arg, self.element_class) and arg.parent() == self:
-            return arg
+        elif isinstance(arg, self.element_class):
+            if arg.parent() is self:
+                return arg
+            else:
+                try: # to convert
+                    return arg.map_coefficients(self._base_ring, new_parent=self)
+                except:
+                    raise ValueError('cannot convert {} into element of {}'.format(arg, self))
         else:
             raise ValueError('cannot convert {} into element of {}'.format(arg, self))
 
