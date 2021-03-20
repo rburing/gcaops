@@ -86,14 +86,17 @@ class Superfunction:
         """
         return self.__class__(self._parent, { degree : self._monomial_coefficients[degree] })
 
-    def map_coefficients(self, f):
+    def map_coefficients(self, f, new_parent=None):
         """
+        Apply ``f`` to each of this superfunction's coefficients and return the resulting superfunction.
         """
-        monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
+        if new_parent is None:
+            new_parent = self._parent
+        monomial_coefficients = keydefaultdict(lambda degree: [new_parent.base_ring().zero() for k in range(new_parent.dimension(degree))])
         for degree in self._monomial_coefficients:
             for k in range(len(self._monomial_coefficients[degree])):
-                monomial_coefficients[degree][k] = self._parent._simplify(f(self._monomial_coefficients[degree][k]))
-        return self.__class__(self._parent, monomial_coefficients)
+                monomial_coefficients[degree][k] = new_parent._simplify(f(self._monomial_coefficients[degree][k]))
+        return self.__class__(new_parent, monomial_coefficients)
 
     def copy(self):
         """
