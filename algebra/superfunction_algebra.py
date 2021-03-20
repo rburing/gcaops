@@ -76,6 +76,17 @@ class Superfunction:
             value = self._monomial_coefficients[degree][index]
         return sign * value
 
+    def __setitem__(self, multi_index, new_value):
+        """
+        Set the coefficient of the monomial in the odd coordinates specified by ``multi_index`` to ``new_value``.
+        """
+        if not isinstance(multi_index, tuple):
+            multi_index = (multi_index,)
+        degree = len(multi_index)
+        sign, index = self._parent._monomial_index(multi_index)
+        if index is not None:
+            self._monomial_coefficients[degree][index] = sign * new_value
+
     def homogeneous_part(self, degree):
         """
         Return the homogeneous part of this superfunction of total degree ``degree`` in the odd coordinates.
