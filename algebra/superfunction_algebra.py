@@ -463,6 +463,12 @@ class SuperfunctionAlgebra:
         assert derivative in self._basis[degree-1]
         return self._basis[degree-1].index(derivative), sign
 
+    def zero(self):
+        """
+        Return the zero element of this superfunction algebra.
+        """
+        return self.element_class(self, {})
+
     def tensor_power(self, n):
         """
         Return the ``n``th tensor power of this superfunction algebra.
