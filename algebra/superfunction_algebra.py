@@ -292,9 +292,9 @@ class Superfunction:
             degree = next(iter(self._monomial_coefficients))
             sign = 1 if degree % 2 == 0 else -1
             other = self._parent(other) # handle the case of a bracket with an even function
-            return sum(self.derivative(self._parent.even_coordinate(i))*other.derivative(self._parent.gen(i)) + sign*self.derivative(self._parent.gen(i))*other.derivative(self._parent.even_coordinate(i)) for i in range(self._parent.ngens()))
+            return sum((self.derivative(self._parent.even_coordinate(i))*other.derivative(self._parent.gen(i)) + sign*self.derivative(self._parent.gen(i))*other.derivative(self._parent.even_coordinate(i)) for i in range(self._parent.ngens())), self._parent.zero())
         else:
-            return sum(self.homogeneous_part(d).bracket(other) for d in self._monomial_coefficients.keys())
+            return sum((self.homogeneous_part(d).bracket(other) for d in self._monomial_coefficients.keys()), self._parent.zero())
 
 class SuperfunctionAlgebra:
     """
