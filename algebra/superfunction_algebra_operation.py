@@ -115,10 +115,7 @@ class SuperfunctionAlgebraUndirectedGraphOperation(SuperfunctionAlgebraOperation
         Assumes that each factor in each term of ``arg`` is homogeneous.
         """
         result = self._codomain.zero()
-        for key in self._graph_vector._vector:
-            g, sign = self._graph_vector.parent().basis().key_to_graph(key)
-            c = self._graph_vector._vector[key]
-            c *= sign
+        for (c, g) in self._graph_vector:
             result += c*self._act_with_graph(g, arg)
         return result
 
