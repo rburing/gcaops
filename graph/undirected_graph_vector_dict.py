@@ -55,6 +55,18 @@ class UndirectedGraphVector_dict:
         """
         return self.__class__(self._parent, self._vector)
 
+    def __iter__(self):
+        """
+        Facilitates iterating over this graph vector, yielding tuples of the form ``(coeff, graph)``.
+        """
+        for key in self._vector:
+            c = self._vector[key]
+            if c.is_zero():
+                continue
+            g, sign = self._parent._graph_basis.key_to_graph(key)
+            c *= sign
+            yield (c, g)
+
     __pos__ = copy
 
     def __neg__(self):
