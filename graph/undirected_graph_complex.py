@@ -180,6 +180,17 @@ class UndirectedGraphComplex_vector(UndirectedGraphModule_vector):
         """
         return 'Undirected graph complex over {} with {}'.format(self._base_ring, self._graph_basis)
 
+    def cohomology_basis(self, vertices, edges):
+        """
+        Return a basis of the cohomology in the given bi-grading ``(vertices, edges)``.
+        """
+        im_d = self._differentials[vertices-1,edges-1].column_module().matrix().transpose()
+        ker_d = self._differentials[vertices,edges].right_kernel().matrix().transpose()
+        cocycles = im_d.augment(ker_d)
+        pivots = cocycles.pivots() # computes reduced row echelon form internally
+        quotient_pivots = [p for p in pivots if p >= im_d.dimensions()[1]]
+        return [self.element_class(self, {(vertices, edges) : cocycles.column(p)}) for p in quotient_pivots]
+
     def _differential_matrix(self, vertices, edges):
         """
         Return the graph differential restricted to bi-grading ``(vertices, edges)`` as a matrix.
