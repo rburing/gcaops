@@ -135,6 +135,25 @@ class UndirectedGraphCochain_vector(UndirectedGraphVector_vector):
                             terms.append([user_coeff, term])
             return self._parent(terms)
 
+    def is_coboundary(self, certificate=False):
+        """
+        Return ``True`` if this graph cochain is a coboundary.
+
+        INPUT:
+
+        - ``certificate`` - if ``True``, return a tuple where the first element is the truth value, and the second element is a graph cochain such that its differential is this graph cochain (or ``None``).
+        """
+        primitive = {}
+        for (bi_grading, vector) in self._vectors.items():
+            try:
+                preimage_bi_grading = (bi_grading[0] - 1, bi_grading[1] - 1)
+                preimage = self._parent._differentials[preimage_bi_grading].solve_right(vector)
+                if certificate:
+                    primitive[preimage_bi_grading] = preimage
+            except:
+                return (False, None) if certificate else False
+        return (True, self._parent.element_class(self._parent, primitive)) if certificate else True
+
 class UndirectedGraphComplex_vector(UndirectedGraphModule_vector):
     """
     Undirected graph complex (with elements stored as dictionaries of vectors).
