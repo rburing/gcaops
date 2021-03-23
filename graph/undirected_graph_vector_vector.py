@@ -53,6 +53,16 @@ class UndirectedGraphVector_vector:
         """
         return self.__class__(self._parent, self._vectors)
 
+    def __iter__(self):
+        """
+        Facilitates iterating over this graph vector, yielding tuples of the form ``(coeff, graph)``.
+        """
+        for (bi_grading, vector) in self._vectors.items():
+            for (k,c) in vector.items():
+                g, sign = self._parent._graph_basis.key_to_graph(bi_grading + (k,))
+                c *= sign
+                yield (c,g)
+
     __pos__ = copy
 
     def __neg__(self):
