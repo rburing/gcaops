@@ -2,6 +2,10 @@ from .undirected_graph import UndirectedGraph
 from .undirected_graph_basis import UndirectedGraphBasis
 from util.misc import keydefaultdict
 from itertools import product
+from functools import partial
+
+def zero_vector(graph_module, bi_grading):
+    return graph_module._vector_constructor(graph_module.base_ring(), graph_module.basis().cardinality(*bi_grading))
 
 class UndirectedGraphVector_vector:
     """
@@ -19,7 +23,7 @@ class UndirectedGraphVector_vector:
         """
         assert isinstance(parent, UndirectedGraphModule_vector)
         self._parent = parent
-        self._vectors = keydefaultdict(lambda key: self._parent._vector_constructor(self._parent.base_ring(), self._parent.basis().cardinality(*key)))
+        self._vectors = keydefaultdict(partial(zero_vector, self._parent))
         for bi_grading in vectors:
             self._vectors[bi_grading] = vectors[bi_grading]
 
