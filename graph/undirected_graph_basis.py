@@ -2,6 +2,7 @@ from util.misc import keydefaultdict
 from util.permutation import selection_sort
 from util.undirected_graph_sage import undirected_graph_canonicalize, undirected_graph_generate, undirected_graph_has_odd_automorphism
 from abc import ABC, abstractmethod
+from functools import partial
 
 class UndirectedGraphBasis(ABC):
     """
@@ -9,6 +10,13 @@ class UndirectedGraphBasis(ABC):
     
     A basis consists of keys ``(v,e,index,...)`` where ``(v,e,index)`` identifies the isomorphism class of the graph.
     """
+    @abstractmethod
+    def _generate_graphs(self, bi_grading):
+        """
+        Return a list of all the graphs in this basis in the given ``bi_grading``.
+        """
+        pass
+
     @abstractmethod
     def graph_to_key(self, graph):
         """
@@ -48,7 +56,18 @@ class UndirectedGraphComplexBasis(UndirectedGraphBasis):
         self._connected = connected
         self._biconnected = biconnected
         self._min_degree = min_degree
-        self._graphs = keydefaultdict(lambda key: list(filter(lambda g: not undirected_graph_has_odd_automorphism(g), undirected_graph_generate(*key, connected=connected, biconnected=biconnected, min_degree=min_degree))))
+        self._graphs = keydefaultdict(partial(__class__._generate_graphs, self))
+
+    def _generate_graphs(self, bi_grading):
+        """
+        Return a list of all the graphs in this basis in the given ``bi_grading``.
+        """
+        v, e = bi_grading
+        graphs = []
+        for g in undirected_graph_generate(v, e, connected=self._connected, biconnected=self._biconnected, min_degree=self._min_degree):
+            if not undirected_graph_has_odd_automorphism(g):
+                graphs.append(g)
+        return graphs
 
     def graph_to_key(self, graph):
         """
@@ -125,7 +144,18 @@ class UndirectedGraphOperadBasis(UndirectedGraphBasis):
         """
         Initialize this basis.
         """
-        self._graphs = keydefaultdict(lambda key: list(filter(lambda g: not undirected_graph_has_odd_automorphism(g), undirected_graph_generate(*key))))
+        self._graphs = keydefaultdict(partial(__class__._generate_graphs, self))
+
+    def _generate_graphs(self, bi_grading):
+        """
+        Return a list of all the graphs in this basis in the given ``bi_grading``.
+        """
+        v, e = bi_grading
+        graphs = []
+        for g in undirected_graph_generate(v, e):
+            if not undirected_graph_has_odd_automorphism(g):
+                graphs.append(g)
+        return graphs
 
     def graph_to_key(self, graph):
         """
