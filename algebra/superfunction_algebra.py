@@ -1,11 +1,14 @@
 from collections.abc import Iterable, MutableMapping
 from itertools import combinations
-from functools import reduce
+from functools import reduce, partial
 from util.permutation import selection_sort
 from util.misc import keydefaultdict
 from .superfunction_algebra_operation import SuperfunctionAlgebraSchoutenBracket
 from .superfunction_algebra_operation import SuperfunctionAlgebraUndirectedGraphOperation, SuperfunctionAlgebraSymmetricUndirectedGraphOperation
 from .tensor_product import TensorProduct
+
+def zero_vector(superfunction_algebra, degree):
+    return [superfunction_algebra.base_ring().zero() for k in range(superfunction_algebra.dimension(degree))]
 
 class Superfunction:
     """
@@ -28,7 +31,7 @@ class Superfunction:
         self._parent = parent
         if not isinstance(monomial_coefficients, MutableMapping):
             raise TypeError('monomial_coefficients must be a dictionary')
-        self._monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
+        self._monomial_coefficients = keydefaultdict(partial(zero_vector, self._parent))
         for degree in monomial_coefficients:
             self._monomial_coefficients[degree] = monomial_coefficients[degree]
             for k in range(len(self._monomial_coefficients[degree])):
@@ -103,7 +106,7 @@ class Superfunction:
         """
         if new_parent is None:
             new_parent = self._parent
-        monomial_coefficients = keydefaultdict(lambda degree: [new_parent.base_ring().zero() for k in range(new_parent.dimension(degree))])
+        monomial_coefficients = keydefaultdict(partial(zero_vector, new_parent))
         for degree in self._monomial_coefficients:
             for k in range(len(self._monomial_coefficients[degree])):
                 monomial_coefficients[degree][k] = new_parent._simplify(f(self._monomial_coefficients[degree][k]))
@@ -127,7 +130,7 @@ class Superfunction:
         """
         Return this superfunction added to ``other``.
         """
-        monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
+        monomial_coefficients = keydefaultdict(partial(zero_vector, self._parent))
         for degree in self._monomial_coefficients:
             for k in range(len(self._monomial_coefficients[degree])):
                 monomial_coefficients[degree][k] = self._monomial_coefficients[degree][k]
@@ -151,7 +154,7 @@ class Superfunction:
         """
         Return this superfunction minus ``other``.
         """
-        monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
+        monomial_coefficients = keydefaultdict(partial(zero_vector, self._parent))
         for degree in self._monomial_coefficients:
             for k in range(len(self._monomial_coefficients[degree])):
                 monomial_coefficients[degree][k] = self._monomial_coefficients[degree][k]
@@ -175,7 +178,7 @@ class Superfunction:
         """
         Return this superfunction multiplied by ``other``.
         """
-        monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
+        monomial_coefficients = keydefaultdict(partial(zero_vector, self._parent))
         if isinstance(other, self.__class__):
             for degree1 in self._monomial_coefficients:
                 for k1 in range(len(self._monomial_coefficients[degree1])):
@@ -255,7 +258,7 @@ class Superfunction:
             return result
         elif len(args) == 1 and any(args[0] is xi for xi in self._parent.gens()):
             j = self._parent.gens().index(args[0])
-            monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
+            monomial_coefficients = keydefaultdict(partial(zero_vector, self._parent))
             for degree in self._monomial_coefficients:
                 for k in range(len(self._monomial_coefficients[degree])):
                     derivative, sign = self._parent._derivative_on_basis(degree, k, j)
@@ -263,7 +266,7 @@ class Superfunction:
                         monomial_coefficients[degree-1][derivative] = self._parent._simplify(sign * self._monomial_coefficients[degree][k])
             return self.__class__(self._parent, monomial_coefficients)
         elif len(args) == 1 and any(args[0] is x for x in self._parent.even_coordinates()):
-            monomial_coefficients = keydefaultdict(lambda degree: [self._parent.base_ring().zero() for k in range(self._parent.dimension(degree))])
+            monomial_coefficients = keydefaultdict(partial(zero_vector, self._parent))
             for degree in self._monomial_coefficients:
                 for k in range(len(self._monomial_coefficients[degree])):
                     monomial_coefficients[degree][k] = self._parent._simplify(self._monomial_coefficients[degree][k].derivative(args[0]))
@@ -295,6 +298,12 @@ class Superfunction:
             return sum((self.derivative(self._parent.even_coordinate(i))*other.derivative(self._parent.gen(i)) + sign*self.derivative(self._parent.gen(i))*other.derivative(self._parent.even_coordinate(i)) for i in range(self._parent.ngens())), self._parent.zero())
         else:
             return sum((self.homogeneous_part(d).bracket(other) for d in self._monomial_coefficients.keys()), self._parent.zero())
+
+def list_combinations(n, k):
+    return list(combinations(range(n), k))
+
+def tensor_power(superfunction_algebra, degree):
+    return TensorProduct([superfunction_algebra]*degree)
 
 class SuperfunctionAlgebra:
     """
@@ -340,10 +349,10 @@ class SuperfunctionAlgebra:
         self._names = tuple(names)
         self.__ngens = len(names)
         self._gens = tuple(self.element_class(self, {1 : [self._base_ring.one() if j == k else self._base_ring.zero() for j in range(self.__ngens)]}) for k in range(self.__ngens))
-        self._basis = keydefaultdict(lambda degree: list(combinations(range(self.__ngens), degree)))
+        self._basis = keydefaultdict(partial(list_combinations, self.__ngens))
         self._simplify = simplify
         self._is_zero = is_zero
-        self._tensor_powers = keydefaultdict(lambda n: TensorProduct([self]*n))
+        self._tensor_powers = keydefaultdict(partial(tensor_power, self))
         self._schouten_bracket = SuperfunctionAlgebraSchoutenBracket(self._tensor_powers[2], self)
 
     def __repr__(self):
