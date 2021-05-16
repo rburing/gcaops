@@ -4,6 +4,7 @@ from .undirected_graph_vector_vector import UndirectedGraphVector_vector, Undire
 from .undirected_graph_basis import UndirectedGraphComplexBasis
 from util.misc import keydefaultdict
 from itertools import product
+from functools import partial
 
 class UndirectedGraphCochain_dict(UndirectedGraphVector_dict):
     """
@@ -171,7 +172,7 @@ class UndirectedGraphComplex_vector(UndirectedGraphModule_vector):
         graph_basis = UndirectedGraphComplexBasis(connected=connected, biconnected=biconnected, min_degree=min_degree)
         super().__init__(base_ring, graph_basis, vector_constructor, matrix_constructor)
         self.element_class = UndirectedGraphCochain_vector
-        self._differentials = keydefaultdict(lambda key: self._differential_matrix(*key))
+        self._differentials = keydefaultdict(partial(__class__._differential_matrix, self))
         # TODO: load differentials from files
 
     def __repr__(self):
@@ -191,10 +192,11 @@ class UndirectedGraphComplex_vector(UndirectedGraphModule_vector):
         quotient_pivots = [p for p in pivots if p >= im_d.dimensions()[1]]
         return [self.element_class(self, {(vertices, edges) : cocycles.column(p)}) for p in quotient_pivots]
 
-    def _differential_matrix(self, vertices, edges):
+    def _differential_matrix(self, bi_grading):
         """
-        Return the graph differential restricted to bi-grading ``(vertices, edges)`` as a matrix.
+        Return the graph differential restricted to the given ``bi_grading`` as a matrix.
         """
+        vertices, edges = bi_grading
         basis = self.basis()
         columns = basis.cardinality(vertices, edges)
         rows = basis.cardinality(vertices + 1, edges + 1)
