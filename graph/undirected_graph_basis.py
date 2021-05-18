@@ -1,7 +1,6 @@
 from graph.undirected_graph import UndirectedGraph
 from graph.graph_basis import GraphBasis
 from util.misc import keydefaultdict
-from util.permutation import selection_sort
 from util.undirected_graph_sage import undirected_graph_canonicalize, undirected_graph_generate, undirected_graph_has_odd_automorphism
 from functools import partial
 
