@@ -1,4 +1,3 @@
-from .undirected_graph import UndirectedGraph
 from .undirected_graph_basis import UndirectedGraphBasis
 from collections import defaultdict
 from itertools import product
@@ -199,7 +198,7 @@ class UndirectedGraphVector_dict:
                         a, b = incident[k]
                         user_edges[a][b] = position + endpoints[k]
                     # NOTE: the convention is that victim edges go last:
-                    term = UndirectedGraph(len(user) + len(victim) - 1, [tuple(e) for e in user_edges] + victim_edges)
+                    term = self._parent._graph_basis.graph_class(len(user) + len(victim) - 1, [tuple(e) for e in user_edges] + victim_edges)
                     terms.append([user_coeff*victim_coeff, term])
         return self._parent(terms)
 
@@ -251,7 +250,7 @@ class UndirectedGraphModule_dict:
         """
         Convert ``arg`` into an element of this module.
         """
-        if isinstance(arg, UndirectedGraph):
+        if isinstance(arg, self._graph_basis.graph_class):
             key, sign = self._graph_basis.graph_to_key(arg)
             if key is not None:
                 return self.element_class(self, { key : self.base_ring().one() * sign })

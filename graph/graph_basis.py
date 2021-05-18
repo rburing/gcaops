@@ -6,6 +6,8 @@ class GraphBasis(ABC):
 
     A basis consists of keys ``(v,e,index,...)`` where ``(v,e,index)`` identifies the isomorphism class of the graph.
     """
+    graph_class = None.__class__
+
     @abstractmethod
     def _generate_graphs(self, bi_grading):
         """

@@ -1,3 +1,4 @@
+from graph.undirected_graph import UndirectedGraph
 from graph.graph_basis import GraphBasis
 from util.misc import keydefaultdict
 from util.permutation import selection_sort
@@ -10,7 +11,7 @@ class UndirectedGraphBasis(GraphBasis):
     
     A basis consists of keys ``(v,e,index,...)`` where ``(v,e,index)`` identifies the isomorphism class of the graph.
     """
-    pass
+    graph_class = UndirectedGraph
 
 class UndirectedGraphComplexBasis(UndirectedGraphBasis):
     """

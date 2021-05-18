@@ -1,4 +1,3 @@
-from .undirected_graph import UndirectedGraph
 from .undirected_graph_vector_dict import UndirectedGraphVector_dict, UndirectedGraphModule_dict
 from .undirected_graph_vector_vector import UndirectedGraphVector_vector, UndirectedGraphModule_vector
 from .undirected_graph_basis import UndirectedGraphComplexBasis
@@ -55,7 +54,7 @@ class UndirectedGraphCochain_dict(UndirectedGraphVector_dict):
                         a, b = incident[k]
                         user_edges[a][b] = position + endpoints[k]
                     # NOTE: the convention is that stick edges go last:
-                    term = UndirectedGraph(len(user) + 1, [tuple(e) for e in user_edges] + stick_edges)
+                    term = self._parent._graph_basis.graph_class(len(user) + 1, [tuple(e) for e in user_edges] + stick_edges)
                     terms.append([user_coeff, term])
         return self._parent(terms)
 
@@ -132,7 +131,7 @@ class UndirectedGraphCochain_vector(UndirectedGraphVector_vector):
                                 a, b = incident[k]
                                 user_edges[a][b] = position + endpoints[k]
                             # NOTE: the convention is that stick edges go last:
-                            term = UndirectedGraph(len(user) + 1, [tuple(e) for e in user_edges] + stick_edges)
+                            term = self._parent._graph_basis.graph_class(len(user) + 1, [tuple(e) for e in user_edges] + stick_edges)
                             terms.append([user_coeff, term])
             return self._parent(terms)
 
