@@ -18,6 +18,20 @@ class UndirectedGraphBasis(ABC):
         pass
 
     @abstractmethod
+    def graphs(self, vertices, edges):
+        """
+        Return the list of graphs in this basis with the given amount of ``vertices`` and ``edges``.
+        """
+        pass
+
+    @abstractmethod
+    def cardinality(self, vertices, edges):
+        """
+        Return the number of graphs in this basis with the given amount of ``vertices`` and ``edges``.
+        """
+        pass
+
+    @abstractmethod
     def graph_to_key(self, graph):
         """
         Return a tuple consisting of the key in this basis and the sign factor such that ``graph`` equals the sign times the graph identified by the key.
