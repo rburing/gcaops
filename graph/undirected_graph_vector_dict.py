@@ -1,6 +1,10 @@
 from .undirected_graph_basis import UndirectedGraphBasis
 from collections import defaultdict
 from itertools import product
+from functools import partial
+
+def zero_in_base_ring(graph_module):
+    return graph_module.base_ring().zero()
 
 class UndirectedGraphVector_dict:
     """
@@ -18,7 +22,7 @@ class UndirectedGraphVector_dict:
         """
         assert isinstance(parent, UndirectedGraphModule_dict)
         self._parent = parent
-        self._vector = defaultdict(lambda: self._parent.base_ring().zero())
+        self._vector = defaultdict(partial(zero_in_base_ring, self._parent))
         for key in vector:
             self._vector[key] = vector[key]
 
