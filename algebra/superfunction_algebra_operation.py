@@ -132,3 +132,71 @@ class SuperfunctionAlgebraSymmetricUndirectedGraphOperation(SuperfunctionAlgebra
         Assumes that each factor in each term of ``arg`` is homogeneous.
         """
         return super().__call__(arg[0].graded_symmetrization())
+
+class SuperfunctionAlgebraDirectedGraphOperation(SuperfunctionAlgebraOperation):
+    """
+    Operation on a SuperfunctionAlgebra defined by a DirectedGraphVector.
+    """
+    def __init__(self, domain, codomain, graph_vector):
+        """
+        Initialize this operation.
+        """
+        super().__init__(domain, codomain)
+        self._graph_vector = graph_vector
+
+    def _act_with_graph(self, graph, arg):
+        """
+        Return the evaluation of ``graph`` at ``arg``.
+
+        ASSUMPTION:
+
+        Assumes that each factor in each term of ``arg`` is homogeneous.
+        """
+        evens = self._codomain.even_coordinates()
+        odds = self._codomain.odd_coordinates()
+        terms = arg[0].terms()
+        for e in graph.edges():
+            new_terms = []
+            for k in range(len(terms)):
+                term0 = terms[k]
+                if 0 in term0:
+                    continue
+                for k in range(self._codomain.ngens()):
+                    right_odd_derivative = term0[e[0]].diff(odds[k])
+                    if right_odd_derivative != 0:
+                        right_even_derivative = term0[e[1]].diff(evens[k])
+                        if right_even_derivative != 0:
+                            right_term = [f.copy() for f in term0]
+                            right_sign = 1 if sum(term0[j].degree() for j in range(e[0])) % 2 == 0 else -1
+                            right_term[e[0]] = right_sign * right_odd_derivative
+                            right_term[e[1]] = right_even_derivative
+                            new_terms.append(right_term)
+            terms = new_terms
+        return sum((reduce(operator.mul, term) for term in terms), self._codomain.zero())
+
+    def __call__(self, *arg):
+        """
+        Return the evaluation of this operation at ``arg``.
+
+        ASSUMPTION:
+
+        Assumes that each factor in each term of ``arg`` is homogeneous.
+        """
+        result = self._codomain.zero()
+        for (c, g) in self._graph_vector:
+            result += c*self._act_with_graph(g, arg)
+        return result
+
+class SuperfunctionAlgebraSymmetricDirectedGraphOperation(SuperfunctionAlgebraDirectedGraphOperation):
+    """
+    Graded symmetric operation on a SuperfunctionAlgebra defined by a DirectedGraphVector.
+    """
+    def __call__(self, *arg):
+        """
+        Return the evaluation of this operation at `arg``.
+
+        ASSUMPTION:
+
+        Assumes that each factor in each term of ``arg`` is homogeneous.
+        """
+        return super().__call__(arg[0].graded_symmetrization())

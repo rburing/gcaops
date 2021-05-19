@@ -5,7 +5,12 @@ from util.permutation import selection_sort
 from util.misc import keydefaultdict
 from .superfunction_algebra_operation import SuperfunctionAlgebraSchoutenBracket
 from .superfunction_algebra_operation import SuperfunctionAlgebraUndirectedGraphOperation, SuperfunctionAlgebraSymmetricUndirectedGraphOperation
+from .superfunction_algebra_operation import SuperfunctionAlgebraDirectedGraphOperation, SuperfunctionAlgebraSymmetricDirectedGraphOperation
 from .tensor_product import TensorProduct
+from graph.graph_vector_vector import GraphVector_vector
+from graph.graph_vector_dict import GraphVector_dict
+from graph.undirected_graph_vector import UndirectedGraphVector_dict, UndirectedGraphVector_vector
+from graph.directed_graph_vector import DirectedGraphVector_dict, DirectedGraphVector_vector
 
 def zero_vector(superfunction_algebra, degree):
     return [superfunction_algebra.base_ring().zero() for k in range(superfunction_algebra.dimension(degree))]
@@ -519,7 +524,12 @@ class SuperfunctionAlgebra:
         Assumes each graph in ``graph_vector`` has the same number of vertices.
         """
         arity = graph_vector.nvertices()
-        return SuperfunctionAlgebraUndirectedGraphOperation(self.tensor_power(arity), self, graph_vector)
+        if not (isinstance(graph_vector, GraphVector_dict) or isinstance(graph_vector, GraphVector_vector)):
+            raise ValueError("graph_vector must be a GraphVector_dict or GraphVector_vector")
+        if isinstance(graph_vector, UndirectedGraphVector_dict) or isinstance(graph_vector, UndirectedGraphVector_vector):
+            return SuperfunctionAlgebraUndirectedGraphOperation(self.tensor_power(arity), self, graph_vector)
+        elif isinstance(graph_vector, DirectedGraphVector_dict) or isinstance(graph_vector, DirectedGraphVector_vector):
+            return SuperfunctionAlgebraDirectedGraphOperation(self.tensor_power(arity), self, graph_vector)
 
     def symmetric_graph_operation(self, graph_vector):
         """
@@ -530,4 +540,9 @@ class SuperfunctionAlgebra:
         Assumes each graph in ``graph_vector`` has the same number of vertices.
         """
         arity = graph_vector.nvertices()
-        return SuperfunctionAlgebraSymmetricUndirectedGraphOperation(self.tensor_power(arity), self, graph_vector)
+        if not (isinstance(graph_vector, GraphVector_dict) or isinstance(graph_vector, GraphVector_vector)):
+            raise ValueError("graph_vector must be a GraphVector_dict or GraphVector_vector")
+        if isinstance(graph_vector, UndirectedGraphVector_dict) or isinstance(graph_vector, UndirectedGraphVector_vector):
+            return SuperfunctionAlgebraSymmetricUndirectedGraphOperation(self.tensor_power(arity), self, graph_vector)
+        elif isinstance(graph_vector, DirectedGraphVector_dict) or isinstance(graph_vector, DirectedGraphVector_vector):
+            return SuperfunctionAlgebraSymmetricDirectedGraphOperation(self.tensor_power(arity), self, graph_vector)
