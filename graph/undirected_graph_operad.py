@@ -9,7 +9,8 @@ class UndirectedGraphOperation_dict(UndirectedGraphVector_dict):
         """
         Initialize this graph operation.
         """
-        assert isinstance(parent, UndirectedGraphOperad_dict)
+        if not isinstance(parent, UndirectedGraphOperad_dict):
+            raise ValueError("parent must be a UndirectedGraphOperad_dict")
         super().__init__(parent, vector)
 
 class UndirectedGraphOperad_dict(UndirectedGraphModule_dict):
