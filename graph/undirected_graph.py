@@ -1,5 +1,7 @@
 from collections.abc import MutableSequence
 from util.permutation import selection_sort
+from itertools import product
+from .directed_graph import DirectedGraph
 
 class UndirectedGraph:
     """
@@ -66,3 +68,12 @@ class UndirectedGraph:
         new_edges = [(relabeling[a], relabeling[b]) for (a,b) in self._edges]
         # constructor takes care of canonicalizing individual edges:
         return __class__(self._num_vertices, new_edges)
+
+    def orientations(self):
+        """
+        An iterator producing the DirectedGraphs which are obtained by orienting this graph in all possible ways.
+        """
+        num_edges = len(self._edges)
+        for reverse in product([False, True], repeat=num_edges):
+            new_edges = [tuple(reversed(self._edges[i])) if reverse[i] else self._edges[i] for i in range(num_edges)]
+            yield DirectedGraph(self._num_vertices, new_edges)
