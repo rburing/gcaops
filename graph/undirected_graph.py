@@ -74,6 +74,7 @@ class UndirectedGraph:
         An iterator producing the DirectedGraphs which are obtained by orienting this graph in all possible ways.
         """
         num_edges = len(self._edges)
+        reversed_edges = [(b,a) for (a,b) in self._edges]
         for reverse in product([False, True], repeat=num_edges):
-            new_edges = [tuple(reversed(self._edges[i])) if reverse[i] else self._edges[i] for i in range(num_edges)]
+            new_edges = [reversed_edges[i] if reverse[i] else self._edges[i] for i in range(num_edges)]
             yield DirectedGraph(self._num_vertices, new_edges)
