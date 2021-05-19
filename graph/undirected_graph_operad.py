@@ -1,4 +1,4 @@
-from .undirected_graph_vector_dict import UndirectedGraphVector_dict, UndirectedGraphModule_dict
+from .undirected_graph_vector import UndirectedGraphVector_dict, UndirectedGraphModule_dict
 from .undirected_graph_basis import UndirectedGraphOperadBasis
 
 class UndirectedGraphOperation_dict(UndirectedGraphVector_dict):

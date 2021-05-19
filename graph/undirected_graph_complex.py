@@ -1,6 +1,5 @@
 from .graph_complex import GraphCochain_dict, GraphComplex_dict, GraphCochain_vector, GraphComplex_vector
-from .undirected_graph_vector_dict import UndirectedGraphVector_dict, UndirectedGraphModule_dict
-from .undirected_graph_vector_vector import UndirectedGraphVector_vector, UndirectedGraphModule_vector
+from .undirected_graph_vector import UndirectedGraphVector_dict, UndirectedGraphModule_dict, UndirectedGraphVector_vector, UndirectedGraphModule_vector
 from .undirected_graph_basis import UndirectedGraphComplexBasis
 from util.misc import keydefaultdict
 from functools import partial
