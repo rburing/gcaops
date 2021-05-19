@@ -57,8 +57,6 @@ class UndirectedGraphComplex_vector(UndirectedGraphModule_vector, GraphComplex_v
         """
         Initialize this graph complex.
         """
-        if not min_degree in [0, 3]:
-            raise ValueError('min_degree can only be 0 or 3')
         if vector_constructor is None:
             raise ValueError('vector_constructor is required')
         if matrix_constructor is None:

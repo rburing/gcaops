@@ -20,6 +20,8 @@ class UndirectedGraphComplexBasis(UndirectedGraphBasis):
         """
         Initialize this basis.
         """
+        if not min_degree in [0, 3]:
+            raise ValueError('min_degree can only be 0 or 3')
         self._connected = connected
         self._biconnected = biconnected
         self._min_degree = min_degree
