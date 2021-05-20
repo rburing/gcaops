@@ -2,6 +2,9 @@ from .graph_vector import GraphVector
 from .graph_vector_dict import GraphVector_dict, GraphModule_dict
 from .graph_vector_vector import GraphVector_vector, GraphModule_vector
 from .directed_graph_basis import DirectedGraphBasis
+# for conversion:
+from .undirected_graph import UndirectedGraph
+from .undirected_graph_vector import UndirectedGraphVector
 
 class DirectedGraphVector(GraphVector):
     """
@@ -46,6 +49,24 @@ class DirectedGraphModule_dict(GraphModule_dict):
         super().__init__(base_ring, graph_basis)
         self.element_class = DirectedGraphVector_dict
 
+    def __call__(self, arg):
+        """
+        Convert ``arg`` into an element of this module.
+        """
+        if isinstance(arg, UndirectedGraph):
+            result = self.zero()
+            for g in arg.orientations():
+                result += super().__call__(g)
+            return result
+        elif isinstance(arg, UndirectedGraphVector):
+            result = self.zero()
+            for (c,g) in arg:
+                for h in g.orientations():
+                    result += c*super().__call__(h)
+            return result
+        else:
+            return super().__call__(arg)
+
 class DirectedGraphVector_vector(DirectedGraphVector, GraphVector_vector):
     """
     Vector representing a linear combination of directed graphs (stored as a dictionary of vectors).
@@ -86,3 +107,21 @@ class DirectedGraphModule_vector(GraphModule_vector):
             raise ValueError('graph_basis must be a DirectedGraphBasis')
         super().__init__(base_ring, graph_basis, vector_constructor, matrix_constructor)
         self.element_class = DirectedGraphVector_vector
+
+    def __call__(self, arg):
+        """
+        Convert ``arg`` into an element of this module.
+        """
+        if isinstance(arg, UndirectedGraph):
+            result = self.zero()
+            for g in arg.orientations():
+                result += super().__call__(g)
+            return result
+        elif isinstance(arg, UndirectedGraphVector):
+            result = self.zero()
+            for (c,g) in arg:
+                for h in g.orientations():
+                    result += c*super().__call__(h)
+            return result
+        else:
+            return super().__call__(arg)
