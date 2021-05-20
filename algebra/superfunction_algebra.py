@@ -309,6 +309,12 @@ def list_combinations(n, k):
 def tensor_power(superfunction_algebra, degree):
     return TensorProduct([superfunction_algebra]*degree)
 
+def identity(x):
+    return x
+
+def call_method(method_name, x):
+    return getattr(x, method_name)()
+
 class SuperfunctionAlgebra:
     """
     Supercommutative algebra of superfunctions on a coordinate chart of a Z_2-graded space.
@@ -317,7 +323,7 @@ class SuperfunctionAlgebra:
     It is a free module over the base ring with an ordered basis consisting of sorted monomials in the odd coordinates.
     The elements encode skew-symmetric multi-derivations of the base ring, or multi-vectors.
     """
-    def __init__(self, base_ring, even_coordinates=None, names='xi', simplify=lambda x: x, is_zero=lambda x: x.is_zero()):
+    def __init__(self, base_ring, even_coordinates=None, names='xi', simplify=None, is_zero='is_zero'):
         """
         Initialize this superfunction algebra.
 
@@ -329,9 +335,9 @@ class SuperfunctionAlgebra:
 
         - ``names`` -- (default: ``'xi'``) a list or tuple of strings or a comma separated string, consisting of names for the odd coordinates; or a single string consisting of a prefix that will be used to generate a list of numbered names
 
-        - ``simplify`` -- (default: ``lambda x: x``) a function that returns a simplification of an element of the base ring (will be used in each operation on elements that affects coefficients)
+        - ``simplify`` -- (default: ``None``) a string, containing the name of a method of an element of the base ring; that method should return a simplification of the element (will be used in each operation on elements that affects coefficients), or ``None`` (which amounts to no simplification).
 
-        - ``is_zero`` -- (default: ``lambda x: x.is_zero()``) a function that returns ``True`` when a simplified element of the base ring is equal to zero (will be used to decide equality of elements, to calculate the degree of elements, and to skip terms in some operations on elements)
+        - ``is_zero`` -- (default: ``'is_zero'``) a string, containing the name of a method of an element of the base ring; that method should return ``True`` when a simplified element of the base ring is equal to zero (will be used to decide equality of elements, to calculate the degree of elements, and to skip terms in some operations on elements)
         """
         self.element_class = Superfunction
         self._base_ring = base_ring
@@ -354,8 +360,15 @@ class SuperfunctionAlgebra:
         self.__ngens = len(names)
         self._gens = tuple(self.element_class(self, {1 : [self._base_ring.one() if j == k else self._base_ring.zero() for j in range(self.__ngens)]}) for k in range(self.__ngens))
         self._basis = keydefaultdict(partial(list_combinations, self.__ngens))
-        self._simplify = simplify
-        self._is_zero = is_zero
+        if simplify is None:
+            self._simplify = identity
+        else:
+            if not isinstance(simplify, str):
+                raise ValueError('simplify must be a string (the name of a method of an element of the base ring)')
+            self._simplify = partial(call_method, simplify)
+        if not isinstance(is_zero, str):
+            raise ValueError('is_zero must be a string (the name of a method of an element of the base ring)')
+        self._is_zero = partial(call_method, is_zero)
         self._tensor_powers = keydefaultdict(partial(tensor_power, self))
         self._schouten_bracket = SuperfunctionAlgebraSchoutenBracket(self._tensor_powers[2], self)
 
