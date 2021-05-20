@@ -272,3 +272,5 @@ class GraphModule_dict:
             return v
         elif arg == 0:
             return self.zero()
+        else:
+            raise NotImplementedError

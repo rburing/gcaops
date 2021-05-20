@@ -280,4 +280,5 @@ class GraphModule_vector:
             return v
         elif arg == 0:
             return self.zero()
-
+        else:
+            raise NotImplementedError
