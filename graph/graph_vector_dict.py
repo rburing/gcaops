@@ -1,3 +1,4 @@
+from .graph_vector import GraphVector
 from .graph_basis import GraphBasis
 from collections import defaultdict
 from itertools import product
@@ -6,7 +7,7 @@ from functools import partial
 def zero_in_base_ring(graph_module):
     return graph_module.base_ring().zero()
 
-class GraphVector_dict:
+class GraphVector_dict(GraphVector):
     """
     Vector representing a linear combination of graphs (stored as a dictionary).
     """

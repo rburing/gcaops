@@ -1,8 +1,15 @@
+from .graph_vector import GraphVector
 from .graph_vector_dict import GraphVector_dict, GraphModule_dict
 from .graph_vector_vector import GraphVector_vector, GraphModule_vector
 from .directed_graph_basis import DirectedGraphBasis
 
-class DirectedGraphVector_dict(GraphVector_dict):
+class DirectedGraphVector(GraphVector):
+    """
+    Vector representing a linear combination of directed graphs.
+    """
+    pass
+
+class DirectedGraphVector_dict(DirectedGraphVector, GraphVector_dict):
     """
     Vector representing a linear combination of directed graphs (stored as a dictionary).
     """
@@ -39,7 +46,7 @@ class DirectedGraphModule_dict(GraphModule_dict):
         super().__init__(base_ring, graph_basis)
         self.element_class = DirectedGraphVector_dict
 
-class DirectedGraphVector_vector(GraphVector_vector):
+class DirectedGraphVector_vector(DirectedGraphVector, GraphVector_vector):
     """
     Vector representing a linear combination of directed graphs (stored as a dictionary of vectors).
     """
@@ -79,4 +86,3 @@ class DirectedGraphModule_vector(GraphModule_vector):
             raise ValueError('graph_basis must be a DirectedGraphBasis')
         super().__init__(base_ring, graph_basis, vector_constructor, matrix_constructor)
         self.element_class = DirectedGraphVector_vector
-

@@ -1,3 +1,4 @@
+from .graph_vector import GraphVector
 from .graph_basis import GraphBasis
 from util.misc import keydefaultdict
 from itertools import product
@@ -6,7 +7,7 @@ from functools import partial
 def zero_vector(graph_module, bi_grading):
     return graph_module._vector_constructor(graph_module.base_ring(), graph_module.basis().cardinality(*bi_grading))
 
-class GraphVector_vector:
+class GraphVector_vector(GraphVector):
     """
     Vector representing a linear combination of graphs (stored as a dictionary of vectors).
     """

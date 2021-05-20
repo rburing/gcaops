@@ -1,8 +1,15 @@
+from .graph_vector import GraphVector
 from .graph_vector_dict import GraphVector_dict, GraphModule_dict
 from .graph_vector_vector import GraphVector_vector, GraphModule_vector
 from .undirected_graph_basis import UndirectedGraphBasis
 
-class UndirectedGraphVector_dict(GraphVector_dict):
+class UndirectedGraphVector(GraphVector):
+    """
+    Vector representing a linear combination of undirected graphs.
+    """
+    pass
+
+class UndirectedGraphVector_dict(UndirectedGraphVector, GraphVector_dict):
     """
     Vector representing a linear combination of undirected graphs (stored as a dictionary).
     """
@@ -39,7 +46,7 @@ class UndirectedGraphModule_dict(GraphModule_dict):
         super().__init__(base_ring, graph_basis)
         self.element_class = UndirectedGraphVector_dict
 
-class UndirectedGraphVector_vector(GraphVector_vector):
+class UndirectedGraphVector_vector(UndirectedGraphVector, GraphVector_vector):
     """
     Vector representing a linear combination of undirected graphs (stored as a dictionary of vectors).
     """
