@@ -135,7 +135,7 @@ class TensorProduct:
         """
         Return ``arg`` converted into an element of this tensor product.
         """
-        if isinstance(arg, self.element_class) and arg.parent() == self:
+        if isinstance(arg, self.element_class) and arg.parent() is self:
             return arg
         elif isinstance(arg, MutableSequence) and all(isinstance(term, MutableSequence) for term in arg):
             return self.element_class(self, arg)
