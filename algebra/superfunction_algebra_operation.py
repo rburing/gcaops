@@ -54,7 +54,7 @@ class SuperfunctionAlgebraSchoutenBracket(SuperfunctionAlgebraOperation):
         elif len(arg) == 1 and isinstance(arg[0], self._domain.element_class) and arg[0].parent() is self._domain:
             return sum(term[0].bracket(term[1]) for term in arg[0].terms())
         else:
-            raise NotImplementedError
+            raise ValueError("input not recognized")
 
 class SuperfunctionAlgebraUndirectedGraphOperation(SuperfunctionAlgebraOperation):
     """
@@ -77,7 +77,7 @@ class SuperfunctionAlgebraUndirectedGraphOperation(SuperfunctionAlgebraOperation
         """
         evens = self._codomain.even_coordinates()
         odds = self._codomain.odd_coordinates()
-        terms = arg[0].terms()
+        terms = arg.terms()
         for e in graph.edges():
             new_terms = []
             for k in range(len(terms)):
@@ -106,32 +106,42 @@ class SuperfunctionAlgebraUndirectedGraphOperation(SuperfunctionAlgebraOperation
             terms = new_terms
         return sum((reduce(operator.mul, term) for term in terms), self._codomain.zero())
 
-    def __call__(self, *arg):
+    def __call__(self, *args):
         """
-        Return the evaluation of this operation at ``arg``.
+        Return the evaluation of this operation at ``args``.
 
         ASSUMPTION:
 
-        Assumes that each factor in each term of ``arg`` is homogeneous.
+        Assumes that each factor in each term of ``args`` is homogeneous.
         """
-        result = self._codomain.zero()
-        for (c, g) in self._graph_vector:
-            result += c*self._act_with_graph(g, arg)
-        return result
+        if len(args) == 1 and isinstance(args[0], self._domain.element_class) and args[0].parent() is self._domain:
+            result = self._codomain.zero()
+            for (c, g) in self._graph_vector:
+                result += c*self._act_with_graph(g, args[0])
+            return result
+        elif len(args) == self._domain.nfactors():
+            return self(self._domain([list(args)]))
+        else:
+            raise ValueError("input not recognized")
 
 class SuperfunctionAlgebraSymmetricUndirectedGraphOperation(SuperfunctionAlgebraUndirectedGraphOperation):
     """
     Graded symmetric operation on a SuperfunctionAlgebra defined by a UndirectedGraphVector.
     """
-    def __call__(self, *arg):
+    def __call__(self, *args):
         """
-        Return the evaluation of this operation at `arg``.
+        Return the evaluation of this operation at `args``.
 
         ASSUMPTION:
 
-        Assumes that each factor in each term of ``arg`` is homogeneous.
+        Assumes that each factor in each term of ``args`` is homogeneous.
         """
-        return super().__call__(arg[0].graded_symmetrization())
+        if len(args) == 1 and isinstance(args[0], self._domain.element_class) and args[0].parent() is self._domain:
+            return super().__call__(args[0].graded_symmetrization())
+        elif len(args) == self._domain.nfactors():
+            return self(self._domain([list(args)]))
+        else:
+            raise ValueError("input not recognized")
 
 class SuperfunctionAlgebraDirectedGraphOperation(SuperfunctionAlgebraOperation):
     """
@@ -154,7 +164,7 @@ class SuperfunctionAlgebraDirectedGraphOperation(SuperfunctionAlgebraOperation):
         """
         evens = self._codomain.even_coordinates()
         odds = self._codomain.odd_coordinates()
-        terms = arg[0].terms()
+        terms = arg.terms()
         for e in graph.edges():
             new_terms = []
             for k in range(len(terms)):
@@ -174,29 +184,39 @@ class SuperfunctionAlgebraDirectedGraphOperation(SuperfunctionAlgebraOperation):
             terms = new_terms
         return sum((reduce(operator.mul, term) for term in terms), self._codomain.zero())
 
-    def __call__(self, *arg):
+    def __call__(self, *args):
         """
-        Return the evaluation of this operation at ``arg``.
+        Return the evaluation of this operation at ``args``.
 
         ASSUMPTION:
 
-        Assumes that each factor in each term of ``arg`` is homogeneous.
+        Assumes that each factor in each term of ``args`` is homogeneous.
         """
-        result = self._codomain.zero()
-        for (c, g) in self._graph_vector:
-            result += c*self._act_with_graph(g, arg)
-        return result
+        if len(args) == 1 and isinstance(args[0], self._domain.element_class) and args[0].parent() is self._domain:
+            result = self._codomain.zero()
+            for (c, g) in self._graph_vector:
+                result += c*self._act_with_graph(g, args[0])
+            return result
+        elif len(args) == self._domain.nfactors():
+            return self(self._domain([list(args)]))
+        else:
+            raise ValueError("input not recognized")
 
 class SuperfunctionAlgebraSymmetricDirectedGraphOperation(SuperfunctionAlgebraDirectedGraphOperation):
     """
     Graded symmetric operation on a SuperfunctionAlgebra defined by a DirectedGraphVector.
     """
-    def __call__(self, *arg):
+    def __call__(self, *args):
         """
-        Return the evaluation of this operation at `arg``.
+        Return the evaluation of this operation at `args``.
 
         ASSUMPTION:
 
-        Assumes that each factor in each term of ``arg`` is homogeneous.
+        Assumes that each factor in each term of ``args`` is homogeneous.
         """
-        return super().__call__(arg[0].graded_symmetrization())
+        if len(args) == 1 and isinstance(args[0], self._domain.element_class) and args[0].parent() is self._domain:
+            return super().__call__(args[0].graded_symmetrization())
+        elif len(args) == self._domain.nfactors():
+            return self(self._domain([list(args)]))
+        else:
+            raise ValueError("input not recognized")
