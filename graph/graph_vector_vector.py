@@ -68,6 +68,17 @@ class GraphVector_vector(GraphVector):
                 c *= sign
                 yield (c,g)
 
+    def __len__(self):
+        """
+        Return the number of graphs with nonzero coefficients in this graph vector.
+        """
+        count = 0
+        for v in self._vectors.values():
+            for (k,c) in v.items():
+                if not c.is_zero():
+                    count += 1
+        return count
+
     __pos__ = copy
 
     def __neg__(self):
