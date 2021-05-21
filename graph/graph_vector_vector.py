@@ -289,6 +289,8 @@ class GraphModule_vector:
                     index = key[2]
                     v._vectors[bi_grading][index] += coeff
             return v
+        elif isinstance(arg, self.element_class) and arg.parent() is self:
+            return arg
         elif arg == 0:
             return self.zero()
         else:
