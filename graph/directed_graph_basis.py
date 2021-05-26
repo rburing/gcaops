@@ -175,4 +175,4 @@ class DirectedGraphOperadBasis(DirectedGraphBasis):
         """
         Return a string representation of this basis.
         """
-        return 'Basis consisting of representatives of isomorphism classes of labeled directed graphs with no automorphisms that induce an odd permutation on edges'
+        return 'Basis consisting of labeled directed graphs with no automorphisms that induce an odd permutation on edges'

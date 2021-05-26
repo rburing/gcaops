@@ -172,4 +172,4 @@ class UndirectedGraphOperadBasis(UndirectedGraphBasis):
         """
         Return a string representation of this basis.
         """
-        return 'Basis consisting of representatives of isomorphism classes of labeled undirected graphs with no automorphisms that induce an odd permutation on edges'
+        return 'Basis consisting of labeled undirected graphs with no automorphisms that induce an odd permutation on edges'
