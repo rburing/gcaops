@@ -4,8 +4,6 @@ import sage.all # make SageMath work when called from Python
 from sage.graphs.graph import Graph
 from sage.graphs.graph_generators import GraphGenerators
 
-# TODO: cache
-
 def undirected_graph_canonicalize(g):
     n = len(g)
     edges = g.edges()
@@ -29,7 +27,7 @@ def undirected_graph_has_odd_automorphism(g):
             return True
     return False
 
-def undirected_graph_generate(num_vertices, num_edges, connected=None, biconnected=None, min_degree=0):
+def undirected_graph_generate(num_vertices, num_edges, connected=None, biconnected=None, min_degree=0, has_odd_automorphism=None):
     args = "{} {}:{}".format(num_vertices, num_edges, num_edges)
     if connected:
         args += " -c"
@@ -40,6 +38,8 @@ def undirected_graph_generate(num_vertices, num_edges, connected=None, biconnect
     try:
         for G in GraphGenerators().nauty_geng(args):
             G = G.canonical_label()
-            yield UndirectedGraph(num_vertices, list(G.edges(labels=False)))
+            g = UndirectedGraph(num_vertices, list(G.edges(labels=False)))
+            if has_odd_automorphism is None or undirected_graph_has_odd_automorphism(g) == has_odd_automorphism:
+                yield g
     except ValueError: # impossible values also errors
         pass

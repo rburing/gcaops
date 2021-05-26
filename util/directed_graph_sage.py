@@ -7,7 +7,6 @@ from sage.graphs.graph import Graph
 from sage.graphs.graph_generators import GraphGenerators
 
 # TODO: use directg?
-# TODO: cache
 
 def directed_graph_canonicalize(g):
     n = len(g)
@@ -32,7 +31,7 @@ def directed_graph_has_odd_automorphism(g):
             return True
     return False
 
-def directed_graph_generate(num_vertices, num_edges, connected=None, biconnected=None, min_degree=0, loops=True):
+def directed_graph_generate(num_vertices, num_edges, connected=None, biconnected=None, min_degree=0, loops=True, has_odd_automorphism=None):
     extra_args = ""
     if connected:
         extra_args += " -c"
@@ -59,7 +58,8 @@ def directed_graph_generate(num_vertices, num_edges, connected=None, biconnected
                         g = DirectedGraph(num_vertices, list(h.edges(labels=False)))
                         g.canonicalize_edges()
                         if not g in results:
-                            yield g
-                            results.append(g)
+                            if has_odd_automorphism is None or directed_graph_has_odd_automorphism(g) == has_odd_automorphism:
+                                yield g
+                                results.append(g)
     except ValueError: # impossible values also errors
         pass

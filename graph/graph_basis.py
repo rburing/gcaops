@@ -9,13 +9,6 @@ class GraphBasis(ABC):
     graph_class = None.__class__
 
     @abstractmethod
-    def _generate_graphs(self, bi_grading):
-        """
-        Return a list of all the graphs in this basis in the given ``bi_grading``.
-        """
-        pass
-
-    @abstractmethod
     def graph_to_key(self, graph):
         """
         Return a tuple consisting of the key in this basis and the sign factor such that ``graph`` equals the sign times the graph identified by the key.

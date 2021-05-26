@@ -1,7 +1,7 @@
 from graph.directed_graph import DirectedGraph
 from graph.graph_basis import GraphBasis
+from graph.graph_cache import directed_graph_cache
 from util.misc import keydefaultdict
-from util.directed_graph_sage import directed_graph_canonicalize, directed_graph_generate, directed_graph_has_odd_automorphism
 from functools import partial
 
 class DirectedGraphBasis(GraphBasis):
@@ -26,18 +26,7 @@ class DirectedGraphComplexBasis(DirectedGraphBasis):
         self._biconnected = biconnected
         self._min_degree = min_degree
         self._loops = loops
-        self._graphs = keydefaultdict(partial(__class__._generate_graphs, self))
-
-    def _generate_graphs(self, bi_grading):
-        """
-        Return a list of all the graphs in this basis in the given ``bi_grading``.
-        """
-        v, e = bi_grading
-        graphs = []
-        for g in directed_graph_generate(v, e, connected=self._connected, biconnected=self._biconnected, min_degree=self._min_degree, loops=self._loops):
-            if not directed_graph_has_odd_automorphism(g):
-                graphs.append(g)
-        return graphs
+        self._graphs = keydefaultdict(partial(directed_graph_cache.graphs, connected=connected, biconnected=biconnected, min_degree=min_degree, loops=loops, has_odd_automorphism=False))
 
     def graph_to_key(self, graph):
         """
@@ -51,7 +40,7 @@ class DirectedGraphComplexBasis(DirectedGraphBasis):
 
         Either ``(None, 1)`` if the input ``graph`` is not in the span of the basis, or a tuple consisting of a key and a sign, where a key is a tuple consisting of the number of vertices, the number of edges, and the index of the graph in the list.
         """
-        g, _, sign = directed_graph_canonicalize(graph)
+        g, _, sign = directed_graph_cache.canonicalize_graph(graph)
         v, e = len(g), len(g.edges())
         try:
             index = self._graphs[v,e].index(g)
@@ -116,18 +105,7 @@ class DirectedGraphOperadBasis(DirectedGraphBasis):
         """
         Initialize this basis.
         """
-        self._graphs = keydefaultdict(partial(__class__._generate_graphs, self))
-
-    def _generate_graphs(self, bi_grading):
-        """
-        Return a list of representatives of all the isomorphism classes of graphs in this basis in the given ``bi_grading``.
-        """
-        v, e = bi_grading
-        graphs = []
-        for g in directed_graph_generate(v, e):
-            if not directed_graph_has_odd_automorphism(g):
-                graphs.append(g)
-        return graphs
+        self._graphs = keydefaultdict(partial(directed_graph_cache.graphs, has_odd_automorphism=False))
 
     def graph_to_key(self, graph):
         """
@@ -141,7 +119,7 @@ class DirectedGraphOperadBasis(DirectedGraphBasis):
 
         Either ``(None, 1)`` if the input ``graph`` is not in the span of the basis, or a tuple consisting of a key and a sign, where a key is a tuple consisting of the number of vertices, the number of edges, the index of the graph in the list, followed by a permutation of vertices.
         """
-        g, undo_canonicalize, sign = directed_graph_canonicalize(graph)
+        g, undo_canonicalize, sign = directed_graph_cache.canonicalize_graph(graph)
         v, e = len(g), len(g.edges())
         try:
             index = self._graphs[v,e].index(g)
