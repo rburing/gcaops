@@ -30,6 +30,7 @@ class UndirectedGraph:
                 raise ValueError('Vertex labels must be between 0 and the number of vertices')
             if first > last:
                 self._edges[k] = (last, first)
+        self._vertex_positions = None
 
     def __repr__(self):
         """
@@ -78,3 +79,38 @@ class UndirectedGraph:
         for reverse in product([False, True], repeat=num_edges):
             new_edges = [reversed_edges[i] if reverse[i] else self._edges[i] for i in range(num_edges)]
             yield DirectedGraph(self._num_vertices, new_edges)
+
+    def get_pos(self):
+        """
+        Return the dictionary of positions of vertices in this graph (used for plotting).
+        """
+        return self._vertex_positions
+
+    def set_pos(self, new_pos):
+        """
+        Set the positions of vertices in this graph (used for plotting).
+        """
+        self._vertex_positions = new_pos
+
+    def plot(self, **options):
+        """
+        Return a plot of this graph.
+        """
+        from sage.graphs.graph import Graph
+        from sage.graphs.graph_plot import GraphPlot
+        g = Graph([(a,b,i) for (i,(a,b)) in enumerate(self.edges())])
+        vertex_positions = self.get_pos()
+        if vertex_positions:
+            g.set_pos(vertex_positions)
+        plot = GraphPlot(graph=g, options=options).plot()
+        if options.get('save_pos', False):
+            self.set_pos(g.get_pos())
+        return plot
+
+    def show(self, **options):
+        """
+        Show this graph.
+        """
+        from sage.graphs.graph_plot import graphplot_options
+        plot_options = {k: options.pop(k) for k in graphplot_options if k in options}
+        return self.plot(**plot_options).show(**options)
