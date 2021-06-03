@@ -18,6 +18,13 @@ class GraphVector(ABC):
         """
         pass
 
+    @abstractmethod
+    def bi_gradings(self):
+        """
+        Return the set of tuples ``(v,e)`` such that this graph vector contains terms with ``v`` vertices and ``e`` edges.
+        """
+        pass
+
     def plot(self, **options):
         """
         Return a plot of this graph vector.
