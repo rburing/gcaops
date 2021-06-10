@@ -1,4 +1,5 @@
 from sage.symbolic.expression_conversions import ExpressionTreeWalker
+from sage.symbolic.ring import SR
 
 class SubstituteJetVariables(ExpressionTreeWalker):
     def __init__(self, functions):
