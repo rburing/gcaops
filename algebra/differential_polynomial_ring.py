@@ -201,7 +201,6 @@ class DifferentialPolynomialRing:
     element_class = DifferentialPolynomial
     
     def __init__(self, base_ring, fibre_names, base_names, max_differential_orders):
-        self._base_ring = base_ring
         self._fibre_names = fibre_names
         self._base_names = base_names
         self._max_differential_orders = tuple(max_differential_orders)
@@ -222,7 +221,10 @@ class DifferentialPolynomialRing:
         self._var_to_idx = {jet : idx for (idx,jet) in self._idx_to_var.items()}
     
     def __repr__(self):
-        return 'Differential Polynomial Ring in {} over {}'.format(', '.join(map(repr, self._polynomial_ring.gens())), self._base_ring)
+        return 'Differential Polynomial Ring in {} over {}'.format(', '.join(map(repr, self._polynomial_ring.gens())), self._polynomial_ring.base_ring())
+
+    def base_ring(self):
+        return self._polynomial_ring.base_ring()
     
     def _first_ngens(self, n):
         return tuple(self.element_class(self, self._polynomial_ring.gen(i)) for i in range(n))
