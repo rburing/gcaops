@@ -3,7 +3,10 @@ from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
 from sage.combinat.integer_vector import IntegerVectors
 from sage.misc.misc_c import prod
+from sage.symbolic.expression import is_Expression
+from sage.calculus.var import var, function
 from itertools import product, combinations
+from util.jet_variables import SubstituteJetVariables
 
 class DifferentialPolynomial:
     def __init__(self, parent, polynomial):
@@ -201,8 +204,8 @@ class DifferentialPolynomialRing:
     element_class = DifferentialPolynomial
     
     def __init__(self, base_ring, fibre_names, base_names, max_differential_orders):
-        self._fibre_names = fibre_names
-        self._base_names = base_names
+        self._fibre_names = tuple(fibre_names)
+        self._base_names = tuple(base_names)
         self._max_differential_orders = tuple(max_differential_orders)
         base_dim = len(self._base_names)
         fibre_dim = len(self._fibre_names)
@@ -219,6 +222,10 @@ class DifferentialPolynomialRing:
         self._polynomial_ring = PolynomialRing(base_ring, base_names + fibre_names + tuple(jet_names))
         self._idx_to_var = {idx : self._polynomial_ring(idx_to_name[idx]) for idx in idx_to_name}
         self._var_to_idx = {jet : idx for (idx,jet) in self._idx_to_var.items()}
+        # for conversion:
+        base_vars = [var(b) for b in self._base_names]
+        symbolic_functions = [function(f)(*base_vars) for f in self._fibre_names]
+        self._subs_jet_vars = SubstituteJetVariables(symbolic_functions)
     
     def __repr__(self):
         return 'Differential Polynomial Ring in {} over {}'.format(', '.join(map(repr, self._polynomial_ring.gens())), self._polynomial_ring.base_ring())
@@ -286,6 +293,8 @@ class DifferentialPolynomialRing:
         return self._idx_to_var[iu_idx]
             
     def __call__(self, arg):
+        if is_Expression(arg):
+            arg = self._subs_jet_vars(arg)
         return self.element_class(self, self._polynomial_ring(arg))
     
     def zero(self):
