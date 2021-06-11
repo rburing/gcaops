@@ -6,7 +6,7 @@ from sage.misc.misc_c import prod
 from sage.symbolic.expression import is_Expression
 from sage.calculus.var import var, function
 from itertools import product, combinations
-from util.jet_variables import SubstituteJetVariables
+from util.jet_variables import SubstituteJetVariables, SubstituteTotalDerivatives
 
 class DifferentialPolynomial:
     def __init__(self, parent, polynomial):
@@ -133,6 +133,11 @@ class DifferentialPolynomial:
         return __class__(self._parent, self._polynomial.subs(poly_arg))
     
     subs = substitute
+
+    def _symbolic_(self, ring):
+        result = ring(self._polynomial)
+        result = self._parent._subs_tot_ders(result)
+        return result
     
     def degree(self):
         return self._polynomial.degree()
@@ -226,6 +231,7 @@ class DifferentialPolynomialRing:
         base_vars = [var(b) for b in self._base_names]
         symbolic_functions = [function(f)(*base_vars) for f in self._fibre_names]
         self._subs_jet_vars = SubstituteJetVariables(symbolic_functions)
+        self._subs_tot_ders = SubstituteTotalDerivatives(symbolic_functions)
     
     def __repr__(self):
         return 'Differential Polynomial Ring in {} over {}'.format(', '.join(map(repr, self._polynomial_ring.gens())), self._polynomial_ring.base_ring())
