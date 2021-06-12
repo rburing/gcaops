@@ -63,6 +63,15 @@ class DirectedGraph:
         new_edges = [(relabeling[a], relabeling[b]) for (a,b) in self._edges]
         return __class__(self._num_vertices, new_edges)
 
+    def out_degrees(self):
+        """
+        Return the tuple of out-degrees of vertices of this graph.
+        """
+        degrees = [0 for i in range(self._num_vertices)]
+        for (a,b) in self._edges:
+            degrees[a] += 1
+        return tuple(degrees)
+
     def get_pos(self):
         """
         Return the dictionary of positions of vertices in this graph (used for plotting).
