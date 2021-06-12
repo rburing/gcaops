@@ -2,7 +2,29 @@ from graph.undirected_graph import UndirectedGraph
 from util.permutation import selection_sort
 import sage.all # make SageMath work when called from Python
 from sage.graphs.graph import Graph
-from sage.graphs.graph_generators import GraphGenerators
+import subprocess
+import os
+
+NAUTY_PREFIX = '' # e.g. '/home/rburing/src/nauty27r1/'
+
+def nauty_generate_undirected(num_vertices, num_edges, connected=None, biconnected=None, min_degree=0):
+    args = [str(num_vertices), "{}:{}".format(num_edges, num_edges)]
+    if connected:
+        args.append("-c")
+    if biconnected:
+        args.append("-C")
+    if min_degree != 0:
+        args.append("-d{}".format(min_degree))
+    FNULL = open(os.devnull, 'w')
+    geng = subprocess.Popen((NAUTY_PREFIX + 'geng', *args), stdout=subprocess.PIPE, stderr=FNULL)
+    showg = subprocess.Popen((NAUTY_PREFIX + 'showg', '-e', '-l0'), stdin=geng.stdout, stderr=FNULL, stdout=subprocess.PIPE)
+    line_count = -1
+    for line in showg.stdout:
+        if line_count % 4 == 2:
+            graph_encoding = line.decode('ascii').rstrip()
+            edges = [tuple(map(int,e.split(' '))) for e in graph_encoding.split('  ')]
+            yield Graph([list(range(num_vertices)), edges])
+        line_count += 1
 
 def undirected_graph_canonicalize(g):
     n = len(g)
@@ -28,18 +50,8 @@ def undirected_graph_has_odd_automorphism(g):
     return False
 
 def undirected_graph_generate(num_vertices, num_edges, connected=None, biconnected=None, min_degree=0, has_odd_automorphism=None):
-    args = "{} {}:{}".format(num_vertices, num_edges, num_edges)
-    if connected:
-        args += " -c"
-    if biconnected:
-        args += " -C"
-    if min_degree != 0:
-        args += " -d{}".format(min_degree)
-    try:
-        for G in GraphGenerators().nauty_geng(args):
-            G = G.canonical_label()
-            g = UndirectedGraph(num_vertices, list(G.edges(labels=False)))
-            if has_odd_automorphism is None or undirected_graph_has_odd_automorphism(g) == has_odd_automorphism:
-                yield g
-    except ValueError: # impossible values also errors
-        pass
+    for G in nauty_generate_undirected(num_vertices, num_edges, connected=connected, biconnected=biconnected, min_degree=min_degree):
+        G = G.canonical_label()
+        g = UndirectedGraph(num_vertices, list(G.edges(labels=False)))
+        if has_odd_automorphism is None or undirected_graph_has_odd_automorphism(g) == has_odd_automorphism:
+            yield g
