@@ -129,8 +129,8 @@ class GraphVector_dict(GraphVector):
         """
         Return this graph vector multiplied by ``other``.
         """
-        v = self._vector.copy()
         if other in self._parent.base_ring():
+            v = self._vector.copy()
             for k in v:
                 v[k] *= other
             return self.__class__(self._parent, v)
