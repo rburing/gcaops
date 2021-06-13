@@ -1,3 +1,5 @@
+from abc import abstractmethod
+from copy import copy
 from .graph_vector import GraphVector
 from .graph_vector_dict import GraphVector_dict, GraphModule_dict
 from .graph_vector_vector import GraphVector_vector, GraphModule_vector
@@ -10,7 +12,12 @@ class DirectedGraphVector(GraphVector):
     """
     Vector representing a linear combination of directed graphs.
     """
-    pass
+    @abstractmethod
+    def filter(self, max_out_degree=None):
+        """
+        Return the graph vector which is the summand of this graph vector containing exactly those graphs that pass the filter.
+        """
+        pass
 
 class DirectedGraphVector_dict(DirectedGraphVector, GraphVector_dict):
     """
@@ -29,6 +36,21 @@ class DirectedGraphVector_dict(DirectedGraphVector, GraphVector_dict):
         if not isinstance(parent, DirectedGraphModule_dict):
             raise ValueError("parent must be a DirectedGraphModule_dict")
         super().__init__(parent, vector)
+
+    def filter(self, max_out_degree=None):
+        """
+        Return the graph vector which is the summand of this graph vector containing exactly those graphs that pass the filter.
+        """
+        new_vector = {}
+        for key in self._vector:
+            c = self._vector[key]
+            if c.is_zero():
+                continue
+            g, sign = self._parent._graph_basis.key_to_graph(key)
+            if any(d > max_out_degree for d in g.out_degrees()):
+                c = self._parent.base_ring().zero()
+            new_vector[key] = c
+        return self.__class__(self._parent, new_vector)
 
 class DirectedGraphModule_dict(GraphModule_dict):
     """
@@ -84,6 +106,19 @@ class DirectedGraphVector_vector(DirectedGraphVector, GraphVector_vector):
         if not isinstance(parent, DirectedGraphModule_vector):
             raise ValueError("parent must be a DirectedGraphModule_vector")
         super().__init__(parent, vectors)
+
+    def filter(self, max_out_degree=None):
+        """
+        Return the graph vector which is the summand of this graph vector containing exactly those graphs that pass the filter.
+        """
+        v = {}
+        for (bi_grading, vector) in self._vectors.items():
+            v[bi_grading] = copy(vector)
+            for j in vector.nonzero_positions():
+                g, sign = self._parent._graph_basis.key_to_graph(bi_grading + (j,))
+                if any(d > max_out_degree for d in g.out_degrees()):
+                    v[bi_grading][j] = self._parent.base_ring().zero()
+        return self.__class__(self._parent, v)
 
 class DirectedGraphModule_vector(GraphModule_vector):
     """
