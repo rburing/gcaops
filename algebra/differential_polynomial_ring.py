@@ -88,16 +88,16 @@ class DifferentialPolynomial:
     def is_zero(self):
         return self._polynomial.is_zero()
 
-    def _derivative_once(self, x):
+    def _partial_derivative_once(self, x):
         return __class__(self._parent, self._polynomial.derivative(x._polynomial))
     
-    def derivative(self, *x):
+    def partial_derivative(self, *x):
         result = self.copy()
         for v in x:
-            result = result._derivative_once(v)
+            result = result._partial_derivative_once(v)
         return result
     
-    diff = derivative
+    pdiff = partial_derivative
     
     def _total_derivative_once(self, x):
         result = self._polynomial.derivative(x._polynomial)
@@ -112,7 +112,8 @@ class DifferentialPolynomial:
             result = result._total_derivative_once(v)
         return result
     
-    tdiff = total_derivative
+    derivative = total_derivative
+    diff = total_derivative
     
     def _integral_monomials_once(self, x):
         # TODO: assumes monomial
