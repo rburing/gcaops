@@ -135,7 +135,7 @@ class GraphVector_dict(GraphVector):
                 v[k] *= other
             return self.__class__(self._parent, v)
         else:
-            raise NotImplementedError
+            return NotImplemented
 
     def __rmul__(self, other):
         """
