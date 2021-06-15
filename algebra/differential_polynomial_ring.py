@@ -77,7 +77,12 @@ class DifferentialPolynomial:
         return __class__(self._parent, self._polynomial^other)
 
     def __truediv__(self, other):
-        return __class__(self._parent, self._polynomial / other)
+        if isinstance(other, __class__):
+            return __class__(self._parent, self._parent._polynomial_ring(self._polynomial / other._polynomial))
+        elif other in self._parent.base_ring():
+            return __class__(self._parent, self._parent._polynomial_ring(self._polynomial / other))
+        else:
+            return NotImplemented
 
     def __floordiv__(self, other):
         if isinstance(other, __class__):
