@@ -43,8 +43,10 @@ class DifferentialPolynomial:
     def __add__(self, other):
         if isinstance(other, __class__):
             return __class__(self._parent, self._polynomial + other._polynomial)
-        else:
+        elif other in self._parent.base_ring():
             return __class__(self._parent, self._polynomial + other)
+        else:
+            return NotImplemented
     
     def __radd__(self, other):
         return self + other
@@ -52,8 +54,10 @@ class DifferentialPolynomial:
     def __sub__(self, other):
         if isinstance(other, __class__):
             return __class__(self._parent, self._polynomial - other._polynomial)
-        else:
+        elif other in self._parent.base_ring():
             return __class__(self._parent, self._polynomial - other)
+        else:
+            return NotImplemented
     
     def __rsub__(self, other):
         return -(self - other)
@@ -61,30 +65,36 @@ class DifferentialPolynomial:
     def __mul__(self, other):
         if isinstance(other, __class__):
             return __class__(self._parent, self._polynomial * other._polynomial)
-        else:
+        elif other in self._parent.base_ring():
             return __class__(self._parent, self._polynomial * other)
+        else:
+            return NotImplemented
     
     def __rmul__(self, other):
         return self * other
-    
+
     def __pow__(self, other):
         return __class__(self._parent, self._polynomial^other)
-    
+
     def __truediv__(self, other):
         return __class__(self._parent, self._polynomial / other)
 
     def __floordiv__(self, other):
         if isinstance(other, __class__):
             return __class__(self._parent, self._polynomial // other._polynomial)
-        else:
+        elif other in self._parent.base_ring():
             return __class__(self._parent, self._polynomial // other)
+        else:
+            return NotImplemented
     
     def __mod__(self, other):
         if isinstance(other, __class__):
             return __class__(self._parent, self._polynomial % other._polynomial)
-        else:
+        elif other in self._parent.base_ring():
             return __class__(self._parent, self._polynomial % other)
-    
+        else:
+            return NotImplemented
+
     def is_zero(self):
         return self._polynomial.is_zero()
 
