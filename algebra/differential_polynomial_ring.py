@@ -312,6 +312,8 @@ class DifferentialPolynomialRing:
         return False
 
     def __call__(self, arg):
+        if isinstance(arg, self.element_class) and arg.parent() is self:
+            return arg
         if is_Expression(arg):
             arg = self._subs_jet_vars(arg)
         return self.element_class(self, self._polynomial_ring(arg))
