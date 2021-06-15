@@ -145,7 +145,7 @@ class Superfunction:
         elif other in self._parent.base_ring():
             monomial_coefficients[0][0] = self._parent._simplify(monomial_coefficients[0][0] + other)
         else:
-            raise NotImplementedError
+            return NotImplemented
         return self.__class__(self._parent, monomial_coefficients)
 
     def __radd__(self, other):
@@ -169,7 +169,7 @@ class Superfunction:
         elif other in self._parent.base_ring():
             monomial_coefficients[0][0] -= other
         else:
-            raise NotImplementedError
+            return NotImplemented
         return self.__class__(self._parent, monomial_coefficients)
 
     def __rsub__(self, other):
@@ -200,7 +200,7 @@ class Superfunction:
                 for k in range(len(self._monomial_coefficients[degree])):
                     monomial_coefficients[degree][k] = self._parent._simplify(self._monomial_coefficients[degree][k] * other)
         else:
-            raise NotImplementedError
+            return NotImplemented
         return self.__class__(self._parent, monomial_coefficients)
 
     def __rmul__(self, other):
