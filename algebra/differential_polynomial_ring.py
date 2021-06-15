@@ -306,6 +306,9 @@ class DifferentialPolynomialRing:
     def zero(self):
         return self.element_class(self, self._polynomial_ring.zero())
     
+    def one(self):
+        return self.element_class(self, self._polynomial_ring.one())
+
     def homogeneous_monomials(self, fibre_degrees, weights, max_differential_orders=None):
         fibre_vars = self.fibre_variables()
         if not len(fibre_degrees) == len(fibre_vars):
