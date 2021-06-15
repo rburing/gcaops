@@ -303,7 +303,14 @@ class DifferentialPolynomialRing:
         iu_idx[1 + x_idx] -= 1
         iu_idx = tuple(iu_idx)
         return self._idx_to_var[iu_idx]
-            
+
+    def __contains__(self, arg):
+        if isinstance(arg, self.element_class) and arg.parent() is self:
+            return True
+        if arg in self._polynomial_ring.base_ring():
+            return True
+        return False
+
     def __call__(self, arg):
         if is_Expression(arg):
             arg = self._subs_jet_vars(arg)
