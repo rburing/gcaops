@@ -85,6 +85,9 @@ class DifferentialPolynomial:
         else:
             return __class__(self._parent, self._polynomial % other)
     
+    def is_zero(self):
+        return self._polynomial.is_zero()
+
     def _derivative_once(self, x):
         return __class__(self._parent, self._polynomial.derivative(x._polynomial))
     
