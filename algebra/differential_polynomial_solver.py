@@ -76,7 +76,7 @@ def solve_homogeneous_diffpoly(target, source, unknowns):
             for w in unknowns_derivatives[v]:
                 _, s = w.variable_subscript()
                 try:
-                    subs[w] = m.tdiff(*s)
+                    subs[w] = m.total_derivative(*s)
                 except ValueError:
                     admissible = False
                     break
@@ -100,7 +100,7 @@ def solve_homogeneous_diffpoly(target, source, unknowns):
             for w in unknowns_derivatives[v]:
                 _, s = w.variable_subscript()
                 try:
-                    subs[w] = m.tdiff(*s)
+                    subs[w] = m.total_derivative(*s)
                 except ValueError:
                     admissible = False
                     break

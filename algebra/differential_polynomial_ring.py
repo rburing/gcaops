@@ -368,7 +368,7 @@ class DifferentialPolynomialRing:
                         if max_differential_orders is not None and total_differential_order[j] > max_differential_orders[fibre_idx]:
                             skip = True
                             break
-                        term[j] = term[j].tdiff(*([base_vars[i]]*V[i][j]))
+                        term[j] = term[j].total_derivative(*([base_vars[i]]*V[i][j]))
                 if skip:
                     break
             if not skip:
@@ -376,4 +376,4 @@ class DifferentialPolynomialRing:
         return monomials
     
 def TD(a,*x):
-    return a.tdiff(*x)
+    return a.total_derivative(*x)
