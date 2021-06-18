@@ -64,3 +64,13 @@ def directed_graph_generate(num_vertices, num_edges, connected=None, biconnected
             g.canonicalize_edges()
             if has_odd_automorphism is None or directed_graph_has_odd_automorphism(g) == has_odd_automorphism:
                 yield g
+
+def directed_graph_to_encoding(g):
+    n = len(g)
+    edges = g.edges()
+    G = DiGraph([list(range(n)), edges])
+    return '&' + G.dig6_string()
+
+def directed_graph_from_encoding(digraph6_string):
+    G = DiGraph(digraph6_string[1:])
+    return DirectedGraph(len(G.vertices()), list(G.edges(labels=False)))

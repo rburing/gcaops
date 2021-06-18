@@ -55,3 +55,13 @@ def undirected_graph_generate(num_vertices, num_edges, connected=None, biconnect
         g = UndirectedGraph(num_vertices, list(G.edges(labels=False)))
         if has_odd_automorphism is None or undirected_graph_has_odd_automorphism(g) == has_odd_automorphism:
             yield g
+
+def undirected_graph_to_encoding(g):
+    n = len(g)
+    edges = g.edges()
+    G = Graph([list(range(n)), edges])
+    return G.graph6_string()
+
+def undirected_graph_from_encoding(graph6_string):
+    G = Graph(graph6_string)
+    return UndirectedGraph(len(G.vertices()), list(G.edges(labels=False)))
