@@ -85,15 +85,12 @@ class DirectedGraphCache(GraphCache):
 
     def _add_graphs(self, result, bi_grading, **options):
         num_vertices, num_edges = bi_grading
-        options['directed'] = True
+        undirected_options = {'connected' : options['connected'], 'biconnected' : options['biconnected'], 'min_degree' : options['min_degree'], 'has_odd_automorphism' : options['has_odd_automorphism']}
         if len(result) == 0:
-            del options['directed']
-            loops = options['loops']
-            if loops:
+            if options['loops'] is None or options['loops']:
                 max_loop_order = num_edges // 2 # NOTE: can have at most this many loops, while still attaining num_edges
             else:
                 max_loop_order = 0
-            del options['loops']
 
             if GRAPH_CACHE_DIR is not None:
                 basename = options_to_filename(num_vertices, num_edges, **options)
@@ -108,8 +105,8 @@ class DirectedGraphCache(GraphCache):
 
             for loop_order in range(max_loop_order + 1):
                 # TODO: use iterator over encodings?
-                for (g_idx, g) in enumerate(self._undirected_graph_cache.graphs((num_vertices, num_edges - loop_order), **options)):
-                    for (h_idx,h) in enumerate(directed_graph_generate_from_undirected(g, num_edges, loops=loops, has_odd_automorphism=options['has_odd_automorphism'])):
+                for (g_idx, g) in enumerate(self._undirected_graph_cache.graphs((num_vertices, num_edges - loop_order), **undirected_options)):
+                    for (h_idx,h) in enumerate(directed_graph_generate_from_undirected(g, num_edges, loops=options['loops'], has_odd_automorphism=options['has_odd_automorphism'])):
                         result.append(h)
                         if GRAPH_CACHE_DIR is not None and loop_order == 0: # NOTE: only graphs without loops are in the image of the orientation map
                             c = undirected_to_directed_graph_coefficient(g, h)
