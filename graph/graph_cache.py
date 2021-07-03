@@ -63,7 +63,6 @@ class UndirectedGraphCache(GraphCache):
 
     def _add_graphs(self, result, bi_grading, **options):
         num_vertices, num_edges = bi_grading
-        options['directed'] = False
         del options['directed']
         if len(result) == 0:
             for g in undirected_graph_generate(num_vertices, num_edges, **options):
