@@ -14,6 +14,7 @@ class GraphFileView(ABC):
         result = cur.execute('SELECT COUNT(name) FROM sqlite_master WHERE type = "table" AND name = "graphs"')
         if result.fetchone()[0] == 0:
             cur.execute('CREATE TABLE graphs (id INTEGER PRIMARY KEY, graph VARCHAR({0:d}))'.format(self._encoding_length()))
+            self._con.commit()
 
     @abstractmethod
     def _encoding_to_graph(self, enc):
@@ -98,3 +99,21 @@ class DirectedGraphFileView(GraphFileView):
         encoding_length = len('&') + 1 + ceil(num_bits / 6.0) # digraph6 length
         return encoding_length
 
+class UndirectedToDirectedGraphFileView:
+    def __init__(self, filename):
+        self._filename = filename
+        self._con = sqlite3.connect(filename)
+        cur = self._con.cursor()
+        result = cur.execute('SELECT COUNT(name) FROM sqlite_master WHERE type = "table" AND name = "undirected_to_directed"')
+        if result.fetchone()[0] == 0:
+            cur.execute('CREATE TABLE undirected_to_directed (undirected_graph_id INTEGER, directed_graph_id INTEGER, coefficient INTEGER)')
+            cur.execute('CREATE INDEX index_undirected ON undirected_to_directed(undirected_graph_id)')
+            self._con.commit()
+
+    def append(self, row):
+        g_idx, h_idx, c = row
+        cur = self._con.cursor()
+        cur.execute('INSERT INTO undirected_to_directed (undirected_graph_id, directed_graph_id, coefficient) VALUES (?, ?, ?)', (1 + g_idx, 1 + h_idx, c))
+
+    def commit(self):
+        self._con.commit()

@@ -1,9 +1,8 @@
-from .graph_file import UndirectedGraphFileView, DirectedGraphFileView
+from .graph_file import UndirectedGraphFileView, DirectedGraphFileView, UndirectedToDirectedGraphFileView
 from abc import ABC, abstractmethod
 from util.undirected_graph_sage import undirected_graph_canonicalize, undirected_graph_generate
 from util.directed_graph_sage import directed_graph_canonicalize, directed_graph_generate_from_undirected, undirected_to_directed_graph_coefficient
 import os
-import sqlite3
 
 GRAPH_CACHE_DIR = None # e.g. '/home/rburing/src/gcaops/.graph_cache'
 
@@ -96,12 +95,7 @@ class DirectedGraphCache(GraphCache):
         if GRAPH_CACHE_DIR is not None:
             basename = options_to_filename(num_vertices, num_edges, **options)
             orientation_filename = os.path.join(GRAPH_CACHE_DIR, 'u_to_' + basename)
-            orientation_con = sqlite3.connect(orientation_filename)
-            orientation_cur = orientation_con.cursor()
-            orientation_cur.execute('DROP TABLE IF EXISTS undirected_to_directed')
-            orientation_cur.execute('CREATE TABLE undirected_to_directed (undirected_graph_id INTEGER, directed_graph_id INTEGER, coefficient INTEGER)')
-            orientation_cur.execute('CREATE INDEX index_undirected ON undirected_to_directed(undirected_graph_id)')
-            orientation_con.commit()
+            orientation_data = UndirectedToDirectedGraphFileView(orientation_filename)
 
         for loop_order in range(max_loop_order + 1):
             # TODO: use iterator over encodings?
@@ -110,9 +104,9 @@ class DirectedGraphCache(GraphCache):
                     result.append(h)
                     if GRAPH_CACHE_DIR is not None and loop_order == 0: # NOTE: only graphs without loops are in the image of the orientation map
                         c = undirected_to_directed_graph_coefficient(g, h)
-                        orientation_cur.execute('INSERT INTO undirected_to_directed (undirected_graph_id, directed_graph_id, coefficient) VALUES (?, ?, ?)', (1 + g_idx, 1 + h_idx, c))
+                        orientation_data.append((g_idx, h_idx, c))
         if GRAPH_CACHE_DIR is not None:
-            orientation_con.commit()
+            orientation_data.commit()
 
     def graphs(self, bi_grading, connected=False, biconnected=False, min_degree=0, loops=True, has_odd_automorphism=True):
         options = {'directed': True, 'connected': connected, 'biconnected': biconnected, 'min_degree': min_degree, 'loops': loops, 'has_odd_automorphism': has_odd_automorphism}
