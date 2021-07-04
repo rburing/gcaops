@@ -96,11 +96,10 @@ class DirectedGraphCache(GraphCache):
                 orientation_filename = os.path.join(GRAPH_CACHE_DIR, 'u_to_' + basename)
                 orientation_con = sqlite3.connect(orientation_filename)
                 orientation_cur = orientation_con.cursor()
-                table_count = orientation_cur.execute('SELECT COUNT(name) FROM sqlite_master WHERE type = "table" AND name = "undirected_to_directed"')
-                if table_count.fetchone()[0] == 0:
-                    orientation_cur.execute('CREATE TABLE undirected_to_directed (undirected_graph_id INTEGER, directed_graph_id INTEGER, coefficient INTEGER)')
-                    orientation_cur.execute('CREATE INDEX index_undirected ON undirected_to_directed(undirected_graph_id)')
-                    orientation_con.commit()
+                orientation_cur.execute('DROP TABLE IF EXISTS undirected_to_directed')
+                orientation_cur.execute('CREATE TABLE undirected_to_directed (undirected_graph_id INTEGER, directed_graph_id INTEGER, coefficient INTEGER)')
+                orientation_cur.execute('CREATE INDEX index_undirected ON undirected_to_directed(undirected_graph_id)')
+                orientation_con.commit()
 
             for loop_order in range(max_loop_order + 1):
                 # TODO: use iterator over encodings?
