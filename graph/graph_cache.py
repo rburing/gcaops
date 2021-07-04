@@ -83,34 +83,36 @@ class DirectedGraphCache(GraphCache):
         return directed_graph_canonicalize(graph)
 
     def _add_graphs(self, result, bi_grading, **options):
+        if len(result) != 0:
+            return # assume we've already done this (valid assumption because commit is done *only after* adding *all* the graphs)
+
         num_vertices, num_edges = bi_grading
         undirected_options = {'connected' : options['connected'], 'biconnected' : options['biconnected'], 'min_degree' : options['min_degree'], 'has_odd_automorphism' : options['has_odd_automorphism']}
-        if len(result) == 0:
-            if options['loops'] is None or options['loops']:
-                max_loop_order = num_edges // 2 # NOTE: can have at most this many loops, while still attaining num_edges
-            else:
-                max_loop_order = 0
+        if options['loops'] is None or options['loops']:
+            max_loop_order = num_edges // 2 # NOTE: can have at most this many loops, while still attaining num_edges
+        else:
+            max_loop_order = 0
 
-            if GRAPH_CACHE_DIR is not None:
-                basename = options_to_filename(num_vertices, num_edges, **options)
-                orientation_filename = os.path.join(GRAPH_CACHE_DIR, 'u_to_' + basename)
-                orientation_con = sqlite3.connect(orientation_filename)
-                orientation_cur = orientation_con.cursor()
-                orientation_cur.execute('DROP TABLE IF EXISTS undirected_to_directed')
-                orientation_cur.execute('CREATE TABLE undirected_to_directed (undirected_graph_id INTEGER, directed_graph_id INTEGER, coefficient INTEGER)')
-                orientation_cur.execute('CREATE INDEX index_undirected ON undirected_to_directed(undirected_graph_id)')
-                orientation_con.commit()
+        if GRAPH_CACHE_DIR is not None:
+            basename = options_to_filename(num_vertices, num_edges, **options)
+            orientation_filename = os.path.join(GRAPH_CACHE_DIR, 'u_to_' + basename)
+            orientation_con = sqlite3.connect(orientation_filename)
+            orientation_cur = orientation_con.cursor()
+            orientation_cur.execute('DROP TABLE IF EXISTS undirected_to_directed')
+            orientation_cur.execute('CREATE TABLE undirected_to_directed (undirected_graph_id INTEGER, directed_graph_id INTEGER, coefficient INTEGER)')
+            orientation_cur.execute('CREATE INDEX index_undirected ON undirected_to_directed(undirected_graph_id)')
+            orientation_con.commit()
 
-            for loop_order in range(max_loop_order + 1):
-                # TODO: use iterator over encodings?
-                for (g_idx, g) in enumerate(self._undirected_graph_cache.graphs((num_vertices, num_edges - loop_order), **undirected_options)):
-                    for (h_idx,h) in enumerate(directed_graph_generate_from_undirected(g, num_edges, loops=options['loops'], has_odd_automorphism=options['has_odd_automorphism'])):
-                        result.append(h)
-                        if GRAPH_CACHE_DIR is not None and loop_order == 0: # NOTE: only graphs without loops are in the image of the orientation map
-                            c = undirected_to_directed_graph_coefficient(g, h)
-                            orientation_cur.execute('INSERT INTO undirected_to_directed (undirected_graph_id, directed_graph_id, coefficient) VALUES (?, ?, ?)', (1 + g_idx, 1 + h_idx, c))
-            if GRAPH_CACHE_DIR is not None:
-                orientation_con.commit()
+        for loop_order in range(max_loop_order + 1):
+            # TODO: use iterator over encodings?
+            for (g_idx, g) in enumerate(self._undirected_graph_cache.graphs((num_vertices, num_edges - loop_order), **undirected_options)):
+                for (h_idx,h) in enumerate(directed_graph_generate_from_undirected(g, num_edges, loops=options['loops'], has_odd_automorphism=options['has_odd_automorphism'])):
+                    result.append(h)
+                    if GRAPH_CACHE_DIR is not None and loop_order == 0: # NOTE: only graphs without loops are in the image of the orientation map
+                        c = undirected_to_directed_graph_coefficient(g, h)
+                        orientation_cur.execute('INSERT INTO undirected_to_directed (undirected_graph_id, directed_graph_id, coefficient) VALUES (?, ?, ?)', (1 + g_idx, 1 + h_idx, c))
+        if GRAPH_CACHE_DIR is not None:
+            orientation_con.commit()
 
     def graphs(self, bi_grading, connected=False, biconnected=False, min_degree=0, loops=True, has_odd_automorphism=True):
         options = {'directed': True, 'connected': connected, 'biconnected': biconnected, 'min_degree': min_degree, 'loops': loops, 'has_odd_automorphism': has_odd_automorphism}
