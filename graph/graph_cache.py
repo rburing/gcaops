@@ -127,5 +127,18 @@ class DirectedGraphCache(GraphCache):
         self._undirected_to_directed[cache_key] = orientation_data
         return my_graphs
 
+    def _undirected_to_directed_coeffs(self, bi_grading, undirected_graph_idx, **options):
+        cache_key = bi_grading + tuple(options[k] for k in self.cache_keys)
+        num_vertices, num_edges = bi_grading
+        self.graphs(bi_grading, **options) # NOTE: this makes sure the required orientation data has been generated/loaded
+        orientation_data = self._undirected_to_directed[cache_key]
+        if GRAPH_CACHE_DIR is not None:
+            for row in orientation_data.undirected_to_directed_coeffs(undirected_graph_idx):
+                yield row
+        else:
+            for row in orientation_data:
+                if row[0] == undirected_graph_idx:
+                    yield (row[1], row[2])
+
 undirected_graph_cache = UndirectedGraphCache()
 directed_graph_cache = DirectedGraphCache(undirected_graph_cache)

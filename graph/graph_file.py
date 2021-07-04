@@ -128,6 +128,11 @@ class UndirectedToDirectedGraphFileView:
         result = cur.execute('SELECT COUNT(*) FROM undirected_to_directed').fetchone()
         return result[0]
 
+    def undirected_to_directed_coeffs(self, undirected_graph_idx):
+        cur = self._con.cursor()
+        for row in cur.execute('SELECT directed_graph_id, coefficient FROM undirected_to_directed WHERE undirected_graph_id = ?', (1 + undirected_graph_idx,)):
+            yield (row[0] - 1, row[1])
+
     # for pickling:
 
     def __getstate__(self):
