@@ -117,3 +117,14 @@ class UndirectedToDirectedGraphFileView:
 
     def commit(self):
         self._con.commit()
+
+    # for pickling:
+
+    def __getstate__(self):
+        state_dict = self.__dict__.copy()
+        del state_dict['_con']
+        return state_dict
+
+    def __setstate__(self, state_dict):
+        self.__dict__.update(state_dict)
+        self._con = sqlite3.connect(self._filename)
