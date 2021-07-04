@@ -24,7 +24,10 @@ class DifferentialPolynomial:
     def __eq__(self, other):
         if other == 0:
             return self._polynomial.is_zero()
-        return self.parent() == other.parent() and self._polynomial == other._polynomial
+        elif isinstance(other, __class__):
+            return self.parent() == other.parent() and self._polynomial == other._polynomial
+        else:
+            return NotImplemented
     
     def __ne__(self, other):
         return not self.__eq__(other)
