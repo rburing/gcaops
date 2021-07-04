@@ -61,11 +61,13 @@ class UndirectedGraphCache(GraphCache):
         return undirected_graph_canonicalize(graph)
 
     def _add_graphs(self, result, bi_grading, **options):
+        if len(result) != 0:
+            return # assume we've already done this (valid assumption because commit is done *only after* adding *all* the graphs)
+
         num_vertices, num_edges = bi_grading
         del options['directed']
-        if len(result) == 0:
-            for g in undirected_graph_generate(num_vertices, num_edges, **options):
-                result.append(g)
+        for g in undirected_graph_generate(num_vertices, num_edges, **options):
+            result.append(g)
 
     def graphs(self, bi_grading, connected=False, biconnected=False, min_degree=0, has_odd_automorphism=True):
         options = {'directed': False, 'connected': connected, 'biconnected': biconnected, 'min_degree': min_degree, 'has_odd_automorphism': has_odd_automorphism}
