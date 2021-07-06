@@ -97,6 +97,19 @@ class DirectedGraphComplexBasis(DirectedGraphBasis):
         """
         return len(self._graphs[vertices,edges])
 
+    def _undirected_to_directed_coeffs(self, bi_grading, undirected_graph_idx):
+        """
+        Return an iterator over tuples of the form ``(directed_graph_idx, coefficient)``, where the index is an index in this basis.
+
+        These tuples correspond to terms in the orientation of the respective undirected graph.
+
+        ASSUMPTIONS:
+
+        Assumes that ``undirected_graph_idx`` refers to an index in a basis with the same options as ``self`` (except for the ``loops`` option).
+        """
+        options = {'connected' : self._connected, 'biconnected' : self._biconnected, 'min_degree' : self._min_degree, 'loops' : self._loops, 'has_odd_automorphism' : False}
+        yield from directed_graph_cache._undirected_to_directed_coeffs(bi_grading, undirected_graph_idx, **options)
+
 class DirectedGraphOperadBasis(DirectedGraphBasis):
     """
     Basis consisting of labeled directed graphs with no automorphisms that induce an odd permutation on edges
