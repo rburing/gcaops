@@ -1,4 +1,4 @@
-from .graph_vector import GraphVector
+from .graph_vector import GraphVector, GraphModule
 from .graph_basis import GraphBasis
 from util.misc import keydefaultdict
 from itertools import product
@@ -214,7 +214,7 @@ class GraphVector_vector(GraphVector):
         """
         return self._vectors[vertices, edges]
 
-class GraphModule_vector:
+class GraphModule_vector(GraphModule):
     """
     Module spanned by graphs (with elements stored as dictionaries of vectors).
     """

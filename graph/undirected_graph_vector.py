@@ -1,4 +1,4 @@
-from .graph_vector import GraphVector
+from .graph_vector import GraphVector, GraphModule
 from .graph_vector_dict import GraphVector_dict, GraphModule_dict
 from .graph_vector_vector import GraphVector_vector, GraphModule_vector
 from .undirected_graph_basis import UndirectedGraphBasis
@@ -6,6 +6,12 @@ from .undirected_graph_basis import UndirectedGraphBasis
 class UndirectedGraphVector(GraphVector):
     """
     Vector representing a linear combination of undirected graphs.
+    """
+    pass
+
+class UndirectedGraphModule(GraphModule):
+    """
+    Module spanned by undirected graphs.
     """
     pass
 
@@ -27,7 +33,7 @@ class UndirectedGraphVector_dict(UndirectedGraphVector, GraphVector_dict):
             raise ValueError("parent must be a UndirectedGraphModule_dict")
         super().__init__(parent, vector)
 
-class UndirectedGraphModule_dict(GraphModule_dict):
+class UndirectedGraphModule_dict(UndirectedGraphModule, GraphModule_dict):
     """
     Module spanned by undirected graphs (with elements stored as dictionaries).
     """
@@ -64,7 +70,7 @@ class UndirectedGraphVector_vector(UndirectedGraphVector, GraphVector_vector):
             raise ValueError("parent must be a UndirectedGraphModule_vector")
         super().__init__(parent, vectors)
 
-class UndirectedGraphModule_vector(GraphModule_vector):
+class UndirectedGraphModule_vector(UndirectedGraphModule, GraphModule_vector):
     """
     Module spanned by undirected graphs (with elements stored as dictionaries of vectors).
     """

@@ -1,4 +1,4 @@
-from .graph_vector import GraphVector
+from .graph_vector import GraphVector, GraphModule
 from .graph_basis import GraphBasis
 from collections import defaultdict
 from itertools import product
@@ -217,7 +217,7 @@ class GraphVector_dict(GraphVector):
                     terms.append([user_coeff*victim_coeff, term])
         return self._parent(terms)
 
-class GraphModule_dict:
+class GraphModule_dict(GraphModule):
     """
     Module spanned by graphs (with elements stored as dictionaries).
     """

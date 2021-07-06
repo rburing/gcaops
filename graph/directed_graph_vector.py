@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from copy import copy
-from .graph_vector import GraphVector
+from .graph_vector import GraphVector, GraphModule
 from .graph_vector_dict import GraphVector_dict, GraphModule_dict
 from .graph_vector_vector import GraphVector_vector, GraphModule_vector
 from .directed_graph_basis import DirectedGraphBasis
@@ -18,6 +18,29 @@ class DirectedGraphVector(GraphVector):
         Return the graph vector which is the summand of this graph vector containing exactly those graphs that pass the filter.
         """
         pass
+
+class DirectedGraphModule(GraphModule):
+    """
+    Module spanned by directed graphs.
+    """
+    def __call__(self, arg):
+        """
+        Convert ``arg`` into an element of this module.
+        """
+        # NOTE: the calls to super().__call__ here will go to the concrete implementation
+        if isinstance(arg, UndirectedGraph):
+            result = self.zero()
+            for g in arg.orientations():
+                result += super().__call__(g)
+            return result
+        elif isinstance(arg, UndirectedGraphVector):
+            result = self.zero()
+            for (c,g) in arg:
+                for h in g.orientations():
+                    result += c*super().__call__(h)
+            return result
+        else:
+            return super().__call__(arg)
 
 class DirectedGraphVector_dict(DirectedGraphVector, GraphVector_dict):
     """
@@ -52,7 +75,7 @@ class DirectedGraphVector_dict(DirectedGraphVector, GraphVector_dict):
             new_vector[key] = c
         return self.__class__(self._parent, new_vector)
 
-class DirectedGraphModule_dict(GraphModule_dict):
+class DirectedGraphModule_dict(DirectedGraphModule, GraphModule_dict):
     """
     Module spanned by directed graphs (with elements stored as dictionaries).
     """
@@ -70,24 +93,6 @@ class DirectedGraphModule_dict(GraphModule_dict):
             raise ValueError('graph_basis must be a DirectedGraphBasis')
         super().__init__(base_ring, graph_basis)
         self.element_class = DirectedGraphVector_dict
-
-    def __call__(self, arg):
-        """
-        Convert ``arg`` into an element of this module.
-        """
-        if isinstance(arg, UndirectedGraph):
-            result = self.zero()
-            for g in arg.orientations():
-                result += super().__call__(g)
-            return result
-        elif isinstance(arg, UndirectedGraphVector):
-            result = self.zero()
-            for (c,g) in arg:
-                for h in g.orientations():
-                    result += c*super().__call__(h)
-            return result
-        else:
-            return super().__call__(arg)
 
 class DirectedGraphVector_vector(DirectedGraphVector, GraphVector_vector):
     """
@@ -120,7 +125,7 @@ class DirectedGraphVector_vector(DirectedGraphVector, GraphVector_vector):
                     v[bi_grading][j] = self._parent.base_ring().zero()
         return self.__class__(self._parent, v)
 
-class DirectedGraphModule_vector(GraphModule_vector):
+class DirectedGraphModule_vector(DirectedGraphModule, GraphModule_vector):
     """
     Module spanned by directed graphs (with elements stored as dictionaries of vectors).
     """
@@ -142,21 +147,3 @@ class DirectedGraphModule_vector(GraphModule_vector):
             raise ValueError('graph_basis must be a DirectedGraphBasis')
         super().__init__(base_ring, graph_basis, vector_constructor, matrix_constructor)
         self.element_class = DirectedGraphVector_vector
-
-    def __call__(self, arg):
-        """
-        Convert ``arg`` into an element of this module.
-        """
-        if isinstance(arg, UndirectedGraph):
-            result = self.zero()
-            for g in arg.orientations():
-                result += super().__call__(g)
-            return result
-        elif isinstance(arg, UndirectedGraphVector):
-            result = self.zero()
-            for (c,g) in arg:
-                for h in g.orientations():
-                    result += c*super().__call__(h)
-            return result
-        else:
-            return super().__call__(arg)
