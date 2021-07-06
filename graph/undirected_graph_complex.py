@@ -1,10 +1,22 @@
 from .graph_complex import GraphCochain_dict, GraphComplex_dict, GraphCochain_vector, GraphComplex_vector
-from .undirected_graph_vector import UndirectedGraphVector_dict, UndirectedGraphModule_dict, UndirectedGraphVector_vector, UndirectedGraphModule_vector
+from .undirected_graph_vector import UndirectedGraphVector, UndirectedGraphModule, UndirectedGraphVector_dict, UndirectedGraphModule_dict, UndirectedGraphVector_vector, UndirectedGraphModule_vector
 from .undirected_graph_basis import UndirectedGraphComplexBasis
 from util.misc import keydefaultdict
 from functools import partial
 
-class UndirectedGraphCochain_dict(UndirectedGraphVector_dict, GraphCochain_dict):
+class UndirectedGraphCochain(UndirectedGraphVector):
+    """
+    Cochain of an UndirectedGraphComplex.
+    """
+    pass
+
+class UndirectedGraphComplex_(UndirectedGraphModule):
+    """
+    Undirected graph complex.
+    """
+    pass
+
+class UndirectedGraphCochain_dict(UndirectedGraphCochain, UndirectedGraphVector_dict, GraphCochain_dict):
     """
     Cochain of an UndirectedGraphComplex (stored as a dictionary).
     """
@@ -16,7 +28,7 @@ class UndirectedGraphCochain_dict(UndirectedGraphVector_dict, GraphCochain_dict)
             raise ValueError("parent must be a UndirectedGraphComplex_dict")
         super().__init__(parent, vector)
 
-class UndirectedGraphComplex_dict(UndirectedGraphModule_dict, GraphComplex_dict):
+class UndirectedGraphComplex_dict(UndirectedGraphComplex_, UndirectedGraphModule_dict, GraphComplex_dict):
     """
     Undirected graph complex (with elements stored as dictionaries).
     """
@@ -36,7 +48,7 @@ class UndirectedGraphComplex_dict(UndirectedGraphModule_dict, GraphComplex_dict)
         """
         return 'Undirected graph complex over {} with {}'.format(self._base_ring, self._graph_basis)
 
-class UndirectedGraphCochain_vector(UndirectedGraphVector_vector, GraphCochain_vector):
+class UndirectedGraphCochain_vector(UndirectedGraphCochain, UndirectedGraphVector_vector, GraphCochain_vector):
     """
     Cochain of an UndirectedGraphComplex (stored as a dictionary of vectors).
     """
@@ -48,7 +60,7 @@ class UndirectedGraphCochain_vector(UndirectedGraphVector_vector, GraphCochain_v
             raise ValueError("parent must be a UndirectedGraphComplex_vector")
         super().__init__(parent, vector)
 
-class UndirectedGraphComplex_vector(UndirectedGraphModule_vector, GraphComplex_vector):
+class UndirectedGraphComplex_vector(UndirectedGraphComplex_, UndirectedGraphModule_vector, GraphComplex_vector):
     """
     Undirected graph complex (with elements stored as dictionaries of vectors).
     """

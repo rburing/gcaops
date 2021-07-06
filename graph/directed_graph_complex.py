@@ -1,10 +1,22 @@
 from .graph_complex import GraphCochain_dict, GraphComplex_dict, GraphCochain_vector, GraphComplex_vector
-from .directed_graph_vector import DirectedGraphVector_dict, DirectedGraphModule_dict, DirectedGraphVector_vector, DirectedGraphModule_vector
+from .directed_graph_vector import DirectedGraphVector, DirectedGraphModule, DirectedGraphVector_dict, DirectedGraphModule_dict, DirectedGraphVector_vector, DirectedGraphModule_vector
 from .directed_graph_basis import DirectedGraphComplexBasis
 from util.misc import keydefaultdict
 from functools import partial
 
-class DirectedGraphCochain_dict(DirectedGraphVector_dict, GraphCochain_dict):
+class DirectedGraphCochain(DirectedGraphVector):
+    """
+    Cochain of a DirectedGraphComplex.
+    """
+    pass
+
+class DirectedGraphComplex_(DirectedGraphModule):
+    """
+    Directed graph complex.
+    """
+    pass
+
+class DirectedGraphCochain_dict(DirectedGraphCochain, DirectedGraphVector_dict, GraphCochain_dict):
     """
     Cochain of a DirectedGraphComplex (stored as a dictionary).
     """
@@ -16,7 +28,7 @@ class DirectedGraphCochain_dict(DirectedGraphVector_dict, GraphCochain_dict):
             raise ValueError("parent must be a DirectedGraphComplex_dict")
         super().__init__(parent, vector)
 
-class DirectedGraphComplex_dict(DirectedGraphModule_dict, GraphComplex_dict):
+class DirectedGraphComplex_dict(DirectedGraphComplex_, DirectedGraphModule_dict, GraphComplex_dict):
     """
     Directed graph complex (with elements stored as dictionaries).
     """
@@ -34,7 +46,7 @@ class DirectedGraphComplex_dict(DirectedGraphModule_dict, GraphComplex_dict):
         """
         return 'Directed graph complex over {} with {}'.format(self._base_ring, self._graph_basis)
 
-class DirectedGraphCochain_vector(DirectedGraphVector_vector, GraphCochain_vector):
+class DirectedGraphCochain_vector(DirectedGraphCochain, DirectedGraphVector_vector, GraphCochain_vector):
     """
     Cochain of a DirectedGraphComplex (stored as a dictionary of vectors).
     """
@@ -46,7 +58,7 @@ class DirectedGraphCochain_vector(DirectedGraphVector_vector, GraphCochain_vecto
             raise ValueError("parent must be a DirectedGraphComplex_vector")
         super().__init__(parent, vector)
 
-class DirectedGraphComplex_vector(DirectedGraphModule_vector, GraphComplex_vector):
+class DirectedGraphComplex_vector(DirectedGraphComplex_, DirectedGraphModule_vector, GraphComplex_vector):
     """
     Directed graph complex (with elements stored as dictionaries of vectors).
     """
