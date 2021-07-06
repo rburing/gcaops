@@ -3,12 +3,18 @@ from .undirected_graph_vector import UndirectedGraphVector, UndirectedGraphModul
 from .undirected_graph_basis import UndirectedGraphComplexBasis
 from util.misc import keydefaultdict
 from functools import partial
+from abc import abstractmethod
 
 class UndirectedGraphCochain(UndirectedGraphVector):
     """
     Cochain of an UndirectedGraphComplex.
     """
-    pass
+    @abstractmethod
+    def _indices_and_coefficients(self, bi_grading):
+        """
+        Return an iterator over tuples ``(index, coefficient)`` in this graph cochain.
+        """
+        pass
 
 class UndirectedGraphComplex_(UndirectedGraphModule):
     """
@@ -27,6 +33,18 @@ class UndirectedGraphCochain_dict(UndirectedGraphCochain, UndirectedGraphVector_
         if not isinstance(parent, UndirectedGraphComplex_dict):
             raise ValueError("parent must be a UndirectedGraphComplex_dict")
         super().__init__(parent, vector)
+
+    def _indices_and_coefficients(self, bi_grading):
+        """
+        Return an iterator over tuples ``(index, coefficient)`` in this graph cochain.
+        """
+        for key in self._vector:
+            c = self._vector[key]
+            if c.is_zero():
+                continue
+            num_vertices, num_edges, index = key
+            if (num_vertices, num_edges) == bi_grading:
+                yield (index, c)
 
 class UndirectedGraphComplex_dict(UndirectedGraphComplex_, UndirectedGraphModule_dict, GraphComplex_dict):
     """
@@ -59,6 +77,12 @@ class UndirectedGraphCochain_vector(UndirectedGraphCochain, UndirectedGraphVecto
         if not isinstance(parent, UndirectedGraphComplex_vector):
             raise ValueError("parent must be a UndirectedGraphComplex_vector")
         super().__init__(parent, vector)
+
+    def _indices_and_coefficients(self, bi_grading):
+        """
+        Return an iterator over tuples ``(index, coefficient)`` in this graph cochain.
+        """
+        yield from self._vectors[bi_grading].items()
 
 class UndirectedGraphComplex_vector(UndirectedGraphComplex_, UndirectedGraphModule_vector, GraphComplex_vector):
     """
