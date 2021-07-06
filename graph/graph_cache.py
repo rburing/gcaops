@@ -95,12 +95,14 @@ class DirectedGraphCache(GraphCache):
 
         for loop_order in range(max_loop_order + 1):
             # TODO: use iterator over encodings?
+            h_idx = 0
             for (g_idx, g) in enumerate(self._undirected_graph_cache.graphs((num_vertices, num_edges - loop_order), **undirected_options)):
-                for (h_idx,h) in enumerate(directed_graph_generate_from_undirected(g, num_edges, loops=options['loops'], has_odd_automorphism=options['has_odd_automorphism'])):
+                for h in directed_graph_generate_from_undirected(g, num_edges, loops=options['loops'], has_odd_automorphism=options['has_odd_automorphism']):
                     result.append(h)
                     if loop_order == 0: # NOTE: only graphs without loops are in the image of the orientation map
                         c = undirected_to_directed_graph_coefficient(g, h)
                         orientation_data.append((g_idx, h_idx, c))
+                    h_idx += 1
 
     def graphs(self, bi_grading, connected=False, biconnected=False, min_degree=0, loops=True, has_odd_automorphism=True):
         options = {'directed': True, 'connected': connected, 'biconnected': biconnected, 'min_degree': min_degree, 'loops': loops, 'has_odd_automorphism': has_odd_automorphism}
