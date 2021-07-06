@@ -133,8 +133,7 @@ class DirectedGraphCache(GraphCache):
         self.graphs(bi_grading, **options) # NOTE: this makes sure the required orientation data has been generated/loaded
         orientation_data = self._undirected_to_directed[cache_key]
         if GRAPH_CACHE_DIR is not None:
-            for row in orientation_data.undirected_to_directed_coeffs(undirected_graph_idx):
-                yield row
+            yield from orientation_data.undirected_to_directed_coeffs(undirected_graph_idx)
         else:
             for row in orientation_data:
                 if row[0] == undirected_graph_idx:
