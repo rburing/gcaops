@@ -82,6 +82,12 @@ class UndirectedGraphComplexBasis(UndirectedGraphBasis):
             filters_str = ''
         return 'Basis consisting of representatives of isomorphism classes of undirected graphs{} with no automorphisms that induce an odd permutation on edges'.format(filters_str)
 
+    def graph_properties(self):
+        """
+        Return a dictionary containing the properties of the graphs in this basis.
+        """
+        return {'connected' : self._connected, 'biconnected' : self._biconnected, 'min_degree' : self._min_degree}
+
     def graphs(self, vertices, edges):
         """
         Return the list of graphs in this basis with the given amount of ``vertices`` and ``edges``.
@@ -151,3 +157,9 @@ class UndirectedGraphOperadBasis(UndirectedGraphBasis):
         Return a string representation of this basis.
         """
         return 'Basis consisting of labeled undirected graphs with no automorphisms that induce an odd permutation on edges'
+
+    def graph_properties(self):
+        """
+        Return a dictionary containing the properties of the graphs in this basis.
+        """
+        return {}

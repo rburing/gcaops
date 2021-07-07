@@ -36,3 +36,9 @@ class GraphBasis(ABC):
         """
         return 'Basis consisting of graphs'
 
+    @abstractmethod
+    def graph_properties(self):
+        """
+        Return a dictionary containing the properties of the graphs in this basis.
+        """
+        pass
