@@ -1,6 +1,7 @@
 from .graph_complex import GraphCochain_dict, GraphComplex_dict, GraphCochain_vector, GraphComplex_vector
 from .directed_graph_vector import DirectedGraphVector, DirectedGraphModule, DirectedGraphVector_dict, DirectedGraphModule_dict, DirectedGraphVector_vector, DirectedGraphModule_vector
 from .directed_graph_basis import DirectedGraphComplexBasis
+from .undirected_graph_complex import UndirectedGraphCochain
 from util.misc import keydefaultdict
 from functools import partial
 from abc import abstractmethod
@@ -20,7 +21,22 @@ class DirectedGraphComplex_(DirectedGraphModule):
     """
     Directed graph complex.
     """
-    pass
+    def __call__(self, arg):
+        if isinstance(arg, UndirectedGraphCochain):
+            # We try to use the cache, if graph properties are compatible
+            undirected_properties = arg.parent().basis().graph_properties()
+            directed_properties = self.basis().graph_properties()
+            del directed_properties['loops']
+            if directed_properties != undirected_properties:
+                return super().__call__(arg) # NOTE: falling back to slow implementation
+            result = self.zero()
+            for bi_grading in arg.bi_gradings():
+                for (undirected_graph_idx, coefficient) in arg._indices_and_coefficients(bi_grading):
+                    for (directed_graph_idx, coefficient2) in self._graph_basis._undirected_to_directed_coeffs(bi_grading, undirected_graph_idx):
+                        result._add_to_coeff_by_index(bi_grading, directed_graph_idx, coefficient * coefficient2)
+            return result
+        else:
+            return super().__call__(arg)
 
 class DirectedGraphCochain_dict(DirectedGraphCochain, DirectedGraphVector_dict, GraphCochain_dict):
     """
