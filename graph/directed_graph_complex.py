@@ -3,12 +3,18 @@ from .directed_graph_vector import DirectedGraphVector, DirectedGraphModule, Dir
 from .directed_graph_basis import DirectedGraphComplexBasis
 from util.misc import keydefaultdict
 from functools import partial
+from abc import abstractmethod
 
 class DirectedGraphCochain(DirectedGraphVector):
     """
     Cochain of a DirectedGraphComplex.
     """
-    pass
+    @abstractmethod
+    def _add_to_coeff_by_index(self, bi_grading, index, summand):
+        """
+        Add ``summand`` to the specified coefficient in this graph cochain.
+        """
+        pass
 
 class DirectedGraphComplex_(DirectedGraphModule):
     """
@@ -27,6 +33,12 @@ class DirectedGraphCochain_dict(DirectedGraphCochain, DirectedGraphVector_dict, 
         if not isinstance(parent, DirectedGraphComplex_dict):
             raise ValueError("parent must be a DirectedGraphComplex_dict")
         super().__init__(parent, vector)
+
+    def _add_to_coeff_by_index(self, bi_grading, index, summand):
+        """
+        Add ``summand`` to the specified coefficient in this graph cochain.
+        """
+        self._vector[bi_grading + (index,)] += summand
 
 class DirectedGraphComplex_dict(DirectedGraphComplex_, DirectedGraphModule_dict, GraphComplex_dict):
     """
@@ -57,6 +69,12 @@ class DirectedGraphCochain_vector(DirectedGraphCochain, DirectedGraphVector_vect
         if not isinstance(parent, DirectedGraphComplex_vector):
             raise ValueError("parent must be a DirectedGraphComplex_vector")
         super().__init__(parent, vector)
+
+    def _add_to_coeff_by_index(self, bi_grading, index, summand):
+        """
+        Add ``summand`` to the specified coefficient in this graph cochain.
+        """
+        self._vectors[bi_grading][index] += summand
 
 class DirectedGraphComplex_vector(DirectedGraphComplex_, DirectedGraphModule_vector, GraphComplex_vector):
     """
