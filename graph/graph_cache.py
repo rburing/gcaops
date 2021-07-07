@@ -87,19 +87,35 @@ class DirectedGraphCache(GraphCache):
             return # assume we've already done this (valid assumption because commit is done *only after* adding *all* the graphs)
 
         num_vertices, num_edges = bi_grading
-        undirected_options = {'connected' : options['connected'], 'biconnected' : options['biconnected'], 'min_degree' : options['min_degree'], 'has_odd_automorphism' : options['has_odd_automorphism']}
+
+        # NOTE: for an even directed graph (having no odd automorphism), the underlying undirected graph may still be odd (have an odd automorphism)
+        underlying_undirected_options = {'connected' : options['connected'], 'biconnected' : options['biconnected'], 'min_degree' : options['min_degree'], 'has_odd_automorphism' : None}
+
+        undirected_options = {}
+        undirected_options.update(underlying_undirected_options)
+        undirected_options['has_odd_automorphism'] = options['has_odd_automorphism']
+
         if options['loops'] is None or options['loops']:
             max_loop_order = num_edges // 2 # NOTE: can have at most this many loops, while still attaining num_edges
         else:
             max_loop_order = 0
 
         for loop_order in range(max_loop_order + 1):
-            # TODO: use iterator over encodings?
+            loopless = loop_order == 0
             h_idx = 0
-            for (g_idx, g) in enumerate(self._undirected_graph_cache.graphs((num_vertices, num_edges - loop_order), **undirected_options)):
+            # TODO: use iterator over encodings?
+            for g in self._undirected_graph_cache.graphs((num_vertices, num_edges - loop_order), **underlying_undirected_options):
+                # TODO: arrange to get the index of the undirected graph (for orientation data) more efficiently
+                try:
+                    if loopless: # NOTE: only graphs without loops are in the image of the orientation map
+                        g_idx = self._undirected_graph_cache.graphs((num_vertices, num_edges), **undirected_options).index(g)
+                    else:
+                        g_idx = None
+                except ValueError:
+                    g_idx = None
                 for h in directed_graph_generate_from_undirected(g, num_edges, loops=options['loops'], has_odd_automorphism=options['has_odd_automorphism']):
                     result.append(h)
-                    if loop_order == 0: # NOTE: only graphs without loops are in the image of the orientation map
+                    if g_idx is not None:
                         c = undirected_to_directed_graph_coefficient(g, h)
                         orientation_data.append((g_idx, h_idx, c))
                     h_idx += 1
