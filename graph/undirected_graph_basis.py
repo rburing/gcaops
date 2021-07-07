@@ -86,7 +86,7 @@ class UndirectedGraphComplexBasis(UndirectedGraphBasis):
         """
         Return a dictionary containing the properties of the graphs in this basis.
         """
-        return {'connected' : self._connected, 'biconnected' : self._biconnected, 'min_degree' : self._min_degree}
+        return {'connected' : self._connected, 'biconnected' : self._biconnected, 'min_degree' : self._min_degree, 'has_odd_automorphism' : False}
 
     def graphs(self, vertices, edges):
         """
@@ -162,4 +162,4 @@ class UndirectedGraphOperadBasis(UndirectedGraphBasis):
         """
         Return a dictionary containing the properties of the graphs in this basis.
         """
-        return {}
+        return {'has_odd_automorphism' : False}

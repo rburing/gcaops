@@ -89,7 +89,7 @@ class DirectedGraphComplexBasis(DirectedGraphBasis):
         """
         Return a dictionary containing the properties of the graphs in this basis.
         """
-        return {'connected' : self._connected, 'biconnected' : self._biconnected, 'min_degree' : self._min_degree, 'loops' : self._loops}
+        return {'connected' : self._connected, 'biconnected' : self._biconnected, 'min_degree' : self._min_degree, 'loops' : self._loops, 'has_odd_automorphism' : False}
 
     def graphs(self, vertices, edges):
         """
@@ -113,7 +113,7 @@ class DirectedGraphComplexBasis(DirectedGraphBasis):
 
         Assumes that ``undirected_graph_idx`` refers to an index in a basis with the same options as ``self`` (except for the ``loops`` option).
         """
-        options = {'connected' : self._connected, 'biconnected' : self._biconnected, 'min_degree' : self._min_degree, 'loops' : self._loops, 'has_odd_automorphism' : False}
+        options = self.graph_properties()
         yield from directed_graph_cache._undirected_to_directed_coeffs(bi_grading, undirected_graph_idx, **options)
 
 class DirectedGraphOperadBasis(DirectedGraphBasis):
@@ -178,4 +178,4 @@ class DirectedGraphOperadBasis(DirectedGraphBasis):
         """
         Return a dictionary containing the properties of the graphs in this basis.
         """
-        return {}
+        return {'has_odd_automorphism' : False}
