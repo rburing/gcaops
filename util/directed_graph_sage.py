@@ -10,27 +10,6 @@ import os
 
 NAUTY_PREFIX = '' # e.g. '/home/rburing/src/nauty27r1/'
 
-def nauty_generate_directed(num_vertices, num_undirected_edges, num_directed_edges, connected=None, biconnected=None, min_degree=0, loops=True):
-    geng_args = [str(num_vertices), "{}:{}".format(num_undirected_edges, num_undirected_edges)]
-    if connected:
-        geng_args.append("-c")
-    if biconnected:
-        geng_args.append("-C")
-    if min_degree != 0:
-        geng_args.append("-d{}".format(min_degree))
-    directg_args = ['-T', '-e{}:{}'.format(num_directed_edges, num_directed_edges)]
-    if not loops:
-        directg_args.append('-o')
-    FNULL = open(os.devnull, 'w')
-    geng = subprocess.Popen((NAUTY_PREFIX + 'geng', *geng_args), stdout=subprocess.PIPE, stderr=FNULL)
-    directg = subprocess.Popen((NAUTY_PREFIX + 'directg', *directg_args), stdin=geng.stdout, stdout=subprocess.PIPE, stderr=FNULL)
-    for line in directg.stdout:
-        graph_encoding = line.decode('ascii').rstrip()
-        numbers = [int(v) for v in graph_encoding.split(' ')]
-        numbers = numbers[2:]
-        edges = [(numbers[2*i], numbers[2*i+1]) for i in range(num_directed_edges)]
-        yield DiGraph([list(range(num_vertices)), edges])
-
 # TODO: use a single directg process for multiple inputs
 
 def nauty_generate_directed_from_undirected(undirected_graph, num_directed_edges, loops=True):
