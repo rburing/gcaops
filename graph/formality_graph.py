@@ -94,6 +94,16 @@ class FormalityGraph:
             degrees[a] += 1
         return tuple(degrees)
 
+    def differential_orders(self):
+        """
+        Return the tuple of in-degrees of the ground vertices of this graph.
+        """
+        degrees = [0 for i in range(self._num_ground_vertices)]
+        for (a,b) in self._edges:
+            if b < self._num_ground_vertices:
+                degrees[b] += 1
+        return tuple(degrees)
+
     def get_pos(self):
         """
         Return the dictionary of positions of vertices in this graph (used for plotting).
