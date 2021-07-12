@@ -28,9 +28,9 @@ class FormalityGraph:
         num_vertices = num_ground_vertices + num_aerial_vertices
         for (source,target) in edges:
             if source >= num_vertices or target >= num_vertices:
-                raise ValueError('Vertex labels must be between 0 and the total number of vertices')
+                raise ValueError('Vertex labels must be natural numbers less than the total number of vertices (i.e. < {}). Got edge {}'.format(num_vertices, (source, target)))
             if source < num_ground_vertices:
-                raise ValueError('Ground vertices must not have any outgoing edges')
+                raise ValueError('Ground vertices (< {}) must not have any outgoing edges. Got edge {}'.format(num_ground_vertices, (source, target)))
         self._edges = edges
         self._vertex_positions = None
 
