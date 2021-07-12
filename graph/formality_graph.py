@@ -112,9 +112,10 @@ class FormalityGraph:
         """
         from sage.graphs.digraph import DiGraph
         from sage.graphs.graph_plot import GraphPlot
-        g = DiGraph([(a,b,i) for (i,(a,b)) in enumerate(self.edges())])
-        ground_pos = { v : (v,0) for v in range(self._num_ground_vertices)}
-        aerial_vertices = range(self._num_ground_vertices, self._num_ground_vertices + self._num_aerial_vertices)
+        num_vertices = self._num_ground_vertices + self._num_aerial_vertices
+        g = DiGraph([list(range(num_vertices)), [(a,b,i) for (i,(a,b)) in enumerate(self.edges())]])
+        ground_pos = { v : [v,0] for v in range(self._num_ground_vertices)}
+        aerial_vertices = range(self._num_ground_vertices, num_vertices)
         vertex_positions = self.get_pos()
         if vertex_positions:
             g.set_pos(vertex_positions)

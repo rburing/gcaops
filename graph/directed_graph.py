@@ -90,7 +90,7 @@ class DirectedGraph:
         """
         from sage.graphs.digraph import DiGraph
         from sage.graphs.graph_plot import GraphPlot
-        g = DiGraph([(a,b,i) for (i,(a,b)) in enumerate(self.edges())])
+        g = DiGraph([list(range(self._num_vertices)), [(a,b,i) for (i,(a,b)) in enumerate(self.edges())]])
         vertex_positions = self.get_pos()
         if vertex_positions:
             g.set_pos(vertex_positions)
