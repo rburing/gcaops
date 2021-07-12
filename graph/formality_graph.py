@@ -52,6 +52,18 @@ class FormalityGraph:
         """
         return isinstance(other, self.__class__) and self._num_ground_vertices == other._num_ground_vertices and self._num_aerial_vertices == other._num_aerial_vertices and self._edges == other._edges
 
+    def num_ground_vertices(self):
+        """
+        Return the number of ground vertices of this graph.
+        """
+        return self._num_ground_vertices
+
+    def num_aerial_vertices(self):
+        """
+        Return the number of aerial vertices of this graph.
+        """
+        return self._num_aerial_vertices
+
     def edges(self):
         """
         Return the list of edges of this graph.
