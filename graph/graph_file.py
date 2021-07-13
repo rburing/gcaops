@@ -1,5 +1,6 @@
 from util.undirected_graph_sage import undirected_graph_from_encoding, undirected_graph_to_encoding
 from util.directed_graph_sage import directed_graph_from_encoding, directed_graph_to_encoding
+from util.formality_graph_sage import formality_graph_from_encoding, formality_graph_to_encoding
 from abc import ABC, abstractmethod
 import sqlite3
 from math import ceil
@@ -143,3 +144,21 @@ class UndirectedToDirectedGraphFileView:
     def __setstate__(self, state_dict):
         self.__dict__.update(state_dict)
         self._con = sqlite3.connect(self._filename)
+
+class FormalityGraphFileView(GraphFileView):
+    def __init__(self, filename, num_ground_vertices, num_aerial_vertices, num_edges):
+        self._num_ground_vertices = num_ground_vertices
+        self._num_aerial_vertices = num_aerial_vertices
+        super().__init__(filename, num_ground_vertices + num_aerial_vertices, num_edges)
+
+    def _encoding_to_graph(self, enc):
+        return formality_graph_from_encoding((self._num_ground_vertices, self._num_aerial_vertices, enc))
+
+    def _graph_to_encoding(self, g):
+        return formality_graph_to_encoding(g)[2]
+
+    def _encoding_length(self):
+        assert self._num_vertices <= 62
+        num_bits = self._num_vertices * self._num_vertices
+        encoding_length = 1 + ceil(num_bits / 6.0) # dig6 length
+        return encoding_length
