@@ -101,3 +101,14 @@ def formality_graph_is_prime(g):
     G = DiGraph([list(range(n)), g.edges()])
     G.delete_vertices(list(range(g.num_ground_vertices())))
     return G.is_connected()
+
+def formality_graph_to_encoding(g):
+    n = len(g)
+    edges = g.edges()
+    G = DiGraph([list(range(n)), edges])
+    return (g.num_ground_vertices(), g.num_aerial_vertices(), G.dig6_string()) # TODO: do better?
+
+def formality_graph_from_encoding(encoding):
+    num_ground, num_aerial, dig6_string = encoding
+    G = DiGraph(dig6_string)
+    return FormalityGraph(num_ground, num_aerial, list(G.edges(labels=False)))
