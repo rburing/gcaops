@@ -63,6 +63,39 @@ class Superfunction:
         else:
             return '0'
 
+    def _latex_(self):
+        """
+        Return a LaTeX representation of this superfunction.
+        """
+        latex_replacements = {'xi' : r'\xi_', r'\left(' + ', '.join(v._latex_() for v in self.parent().even_coordinates()) + r'\right)' : ''}
+        terms = []
+        for degree in reversed(sorted(self._monomial_coefficients.keys())):
+            for k, coefficient in enumerate(self._monomial_coefficients[degree]):
+                c = coefficient._latex_()
+                monomial = self._parent._repr_monomial(degree, k).replace('*', '')
+                if c == '0':
+                    continue
+                if degree == 0:
+                    monomial = ''
+                    prefix = c
+                else:
+                    if c == '1':
+                        prefix = ''
+                    elif c == '-1':
+                        prefix = '-'
+                    elif not '+' in c and not '-' in c:
+                        prefix = r'{}\cdot '.format(c)
+                    else:
+                        prefix = r'\left({}\right)\cdot'.format(c)
+                term = prefix + monomial
+                for original, new in latex_replacements.items():
+                    term = term.replace(original, new)
+                terms.append(term)
+        if terms:
+            return ' + '.join(terms)
+        else:
+            return '0'
+
     def parent(self):
         """
         Return the parent SuperfunctionAlgebra that this superfunction belongs to.
@@ -377,6 +410,16 @@ class SuperfunctionAlgebra:
         Return a string representation of this superfunction algebra.
         """
         return "Superfunction algebra over {} with even coordinates {} and odd coordinates {}".format(self._base_ring, self._even_coordinates, self._gens)
+
+    def _latex_(self):
+        """
+        Return a LaTeX representation of this superfunction algebra.
+        """
+        latex_replacements = {'xi' : r'\xi_'}
+        result = r"{}\langle {} \rangle".format(self._base_ring._latex_(), ','.join(map(str,self._gens)))
+        for original, new in latex_replacements.items():
+            result = result.replace(original, new)
+        return result
 
     def __call__(self, arg):
         """
