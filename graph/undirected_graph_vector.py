@@ -34,6 +34,19 @@ class UndirectedGraphVector_dict(UndirectedGraphVector, GraphVector_dict):
             raise ValueError("parent must be a UndirectedGraphModule_dict")
         super().__init__(parent, vector)
 
+    def nvertices(self):
+        """
+        Return the number of vertices in each graph in this graph vector.
+
+        ASSUMPTIONS:
+
+        Assumes all graphs in this graph vector have the same number of vertices.
+        """
+        for key in self._vector:
+            v, e = key[:2]
+            if not self._vector[key].is_zero():
+                return v
+
     def insertion(self, position, other):
         """
         Return the insertion of ``other`` into this graph vector at the vertex ``position``.
@@ -105,6 +118,18 @@ class UndirectedGraphVector_vector(UndirectedGraphVector, GraphVector_vector):
         if not isinstance(parent, UndirectedGraphModule_vector):
             raise ValueError("parent must be a UndirectedGraphModule_vector")
         super().__init__(parent, vectors)
+
+    def nvertices(self):
+        """
+        Return the number of vertices in each graph in this graph vector.
+
+        ASSUMPTIONS:
+
+        Assumes all graphs in this graph vector have the same number of vertices.
+        """
+        for bi_grading in self._vectors:
+            if not self._vectors[bi_grading].is_zero():
+                return bi_grading[0]
 
     def insertion(self, position, other):
         """

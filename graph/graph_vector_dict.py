@@ -158,19 +158,6 @@ class GraphVector_dict(GraphVector):
         """
         return set((key[0],key[1]) for key in self._vector)
 
-    def nvertices(self):
-        """
-        Return the number of vertices in each graph in this graph vector.
-
-        ASSUMPTIONS:
-
-        Assumes all graphs in this graph vector have the same number of vertices.
-        """
-        for key in self._vector:
-            v, e = key[:2]
-            if not self._vector[key].is_zero():
-                return v
-
     def homogeneous_part(self, vertices, edges):
         """
         Return the homogeneous part of this graph vector consisting only of terms with the given number of ``vertices`` and ``edges``.

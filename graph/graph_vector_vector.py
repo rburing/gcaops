@@ -156,18 +156,6 @@ class GraphVector_vector(GraphVector):
         """
         return set(self._vectors.keys())
 
-    def nvertices(self):
-        """
-        Return the number of vertices in each graph in this graph vector.
-
-        ASSUMPTIONS:
-
-        Assumes all graphs in this graph vector have the same number of vertices.
-        """
-        for bi_grading in self._vectors:
-            if not self._vectors[bi_grading].is_zero():
-                return bi_grading[0]
-
     def homogeneous_part(self, vertices, edges):
         """
         Return the homogeneous part of this graph vector consisting only of terms with the given number of ``vertices`` and ``edges``.
