@@ -7,6 +7,8 @@ from .directed_graph_basis import DirectedGraphBasis
 # for conversion:
 from .undirected_graph import UndirectedGraph
 from .undirected_graph_vector import UndirectedGraphVector
+# for insertion:
+from .undirected_graph_vector import UndirectedGraphVector_dict, UndirectedGraphVector_vector
 
 class DirectedGraphVector(GraphVector):
     """
@@ -75,6 +77,8 @@ class DirectedGraphVector_dict(DirectedGraphVector, GraphVector_dict):
             new_vector[key] = c
         return self.__class__(self._parent, new_vector)
 
+    insertion = UndirectedGraphVector_dict.insertion
+
 class DirectedGraphModule_dict(DirectedGraphModule, GraphModule_dict):
     """
     Module spanned by directed graphs (with elements stored as dictionaries).
@@ -124,6 +128,8 @@ class DirectedGraphVector_vector(DirectedGraphVector, GraphVector_vector):
                 if any(d > max_out_degree for d in g.out_degrees()):
                     v[bi_grading][j] = self._parent.base_ring().zero()
         return self.__class__(self._parent, v)
+
+    insertion = UndirectedGraphVector_vector.insertion
 
 class DirectedGraphModule_vector(DirectedGraphModule, GraphModule_vector):
     """

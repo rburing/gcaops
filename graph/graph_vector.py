@@ -95,6 +95,13 @@ class GraphVector(ABC):
         """
         pass
 
+    @abstractmethod
+    def insertion(self, position, other):
+        """
+        Return the insertion of ``other`` into this graph vector at the vertex ``position``.
+        """
+        pass
+
     def plot(self, **options):
         """
         Return a plot of this graph vector.
