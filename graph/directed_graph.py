@@ -72,6 +72,13 @@ class DirectedGraph:
             degrees[a] += 1
         return tuple(degrees)
 
+    def _sage_(self):
+        """
+        Return a Sage version of this graph.
+        """
+        from sage.graphs.digraph import DiGraph
+        return DiGraph([list(range(self._num_vertices)), [(a,b,i) for (i,(a,b)) in enumerate(self.edges())]])
+
     def get_pos(self):
         """
         Return the dictionary of positions of vertices in this graph (used for plotting).
@@ -88,9 +95,8 @@ class DirectedGraph:
         """
         Return a plot of this graph.
         """
-        from sage.graphs.digraph import DiGraph
+        g = self._sage_()
         from sage.graphs.graph_plot import GraphPlot
-        g = DiGraph([list(range(self._num_vertices)), [(a,b,i) for (i,(a,b)) in enumerate(self.edges())]])
         vertex_positions = self.get_pos()
         if vertex_positions:
             g.set_pos(vertex_positions)

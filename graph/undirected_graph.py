@@ -80,6 +80,13 @@ class UndirectedGraph:
             new_edges = [reversed_edges[i] if reverse[i] else self._edges[i] for i in range(num_edges)]
             yield DirectedGraph(self._num_vertices, new_edges)
 
+    def _sage_(self):
+        """
+        Return a Sage version of this graph.
+        """
+        from sage.graphs.graph import Graph
+        return Graph([(a,b,i) for (i,(a,b)) in enumerate(self.edges())])
+
     def get_pos(self):
         """
         Return the dictionary of positions of vertices in this graph (used for plotting).
@@ -96,9 +103,8 @@ class UndirectedGraph:
         """
         Return a plot of this graph.
         """
-        from sage.graphs.graph import Graph
+        g = self._sage_()
         from sage.graphs.graph_plot import GraphPlot
-        g = Graph([(a,b,i) for (i,(a,b)) in enumerate(self.edges())])
         vertex_positions = self.get_pos()
         if vertex_positions:
             g.set_pos(vertex_positions)
