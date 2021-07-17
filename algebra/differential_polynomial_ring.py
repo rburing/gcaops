@@ -17,6 +17,9 @@ class DifferentialPolynomial:
         
     def __repr__(self):
         return repr(self._polynomial)
+
+    def _latex_(self):
+        return self._polynomial._latex_()
     
     def parent(self):
         return self._parent
@@ -260,6 +263,9 @@ class DifferentialPolynomialRing:
     
     def __repr__(self):
         return 'Differential Polynomial Ring in {} over {}'.format(', '.join(map(repr, self._polynomial_ring.gens())), self._polynomial_ring.base_ring())
+
+    def _latex_(self):
+        return self._polynomial_ring._latex_()
 
     def base_ring(self):
         return self._polynomial_ring.base_ring()
