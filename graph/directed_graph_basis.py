@@ -11,6 +11,7 @@ class DirectedGraphBasis(GraphBasis):
     A basis consists of keys ``(v,e,index,...)`` where ``(v,e,index)`` identifies the isomorphism class of the graph.
     """
     graph_class = DirectedGraph
+    grading_size = 2
 
 class DirectedGraphComplexBasis(DirectedGraphBasis):
     """

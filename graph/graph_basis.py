@@ -4,9 +4,10 @@ class GraphBasis(ABC):
     """
     Basis of a module spanned by graphs.
 
-    A basis consists of keys ``(v,e,index,...)`` where ``(v,e,index)`` identifies the isomorphism class of the graph.
+    A basis consists of tuples ``grading + (index, ...)`` where e.g. ``grading = (num_vertices, num_edges)`` and ``grading + (index,)`` identifies the isomorphism class of the graph.
     """
     graph_class = None.__class__
+    grading_size = -1 # e.g. 2 for (num_vertices, num_edges)
 
     @abstractmethod
     def graph_to_key(self, graph):
