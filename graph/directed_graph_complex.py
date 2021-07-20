@@ -32,7 +32,7 @@ class DirectedGraphComplex_(GraphComplex, DirectedGraphModule):
             if directed_properties != undirected_properties:
                 return super().__call__(arg) # NOTE: falling back to slow implementation
             result = self.zero()
-            for bi_grading in arg.bi_gradings():
+            for bi_grading in arg.gradings():
                 for (undirected_graph_idx, coefficient) in arg._indices_and_coefficients(bi_grading):
                     for (directed_graph_idx, coefficient2) in self._graph_basis._undirected_to_directed_coeffs(bi_grading, undirected_graph_idx):
                         result._add_to_coeff_by_index(bi_grading, directed_graph_idx, coefficient * coefficient2)

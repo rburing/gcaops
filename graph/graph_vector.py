@@ -89,9 +89,9 @@ class GraphVector(ABC):
         pass
 
     @abstractmethod
-    def bi_gradings(self):
+    def gradings(self):
         """
-        Return the set of tuples ``(v,e)`` such that this graph vector contains terms with ``v`` vertices and ``e`` edges.
+        Return the set of grading tuples such that this graph vector contains terms with those gradings.
         """
         pass
 

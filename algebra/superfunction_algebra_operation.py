@@ -171,14 +171,12 @@ class SuperfunctionAlgebraUndirectedGraphOperation(SuperfunctionAlgebraOperation
         """
         super().__init__(domain, codomain)
         arity = domain.nfactors()
-        bi_gradings = graph_vector.bi_gradings()
-        if len(bi_gradings) != 1:
+        if len(graph_vector.gradings()) != 1:
             raise ValueError('graph_vector must be homogenous')
-        bi_grading = next(iter(bi_gradings))
-        if bi_grading[0] != arity:
+        if graph_vector.nvertices() != arity:
             raise ValueError('graph_vector must have as many vertices as the number of factors in the domain')
         self._graph_vector = graph_vector
-        self._degree = -bi_grading[1]
+        self._degree = -graph_vector.nedges()
 
     def degree(self):
         """
@@ -274,14 +272,12 @@ class SuperfunctionAlgebraDirectedGraphOperation(SuperfunctionAlgebraOperation):
         """
         super().__init__(domain, codomain)
         arity = domain.nfactors()
-        bi_gradings = graph_vector.bi_gradings()
-        if len(bi_gradings) != 1:
+        if len(graph_vector.gradings()) != 1:
             raise ValueError('graph_vector must be homogenous')
-        bi_grading = next(iter(bi_gradings))
-        if bi_grading[0] != arity:
+        if graph_vector.nvertices() != arity:
             raise ValueError('graph_vector must have as many vertices as the number of factors in the domain')
         self._graph_vector = graph_vector
-        self._degree = -bi_grading[1]
+        self._degree = -graph_vector.nedges()
 
     def degree(self):
         """

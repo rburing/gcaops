@@ -3,8 +3,8 @@ from .graph_basis import GraphBasis
 from util.misc import keydefaultdict
 from functools import partial
 
-def zero_vector(graph_module, bi_grading):
-    return graph_module._vector_constructor(graph_module.base_ring(), graph_module.basis().cardinality(*bi_grading))
+def zero_vector(graph_module, grading):
+    return graph_module._vector_constructor(graph_module.base_ring(), graph_module.basis().cardinality(*grading))
 
 class GraphVector_vector(GraphVector):
     """
@@ -18,23 +18,23 @@ class GraphVector_vector(GraphVector):
 
         - ``parent`` -- a GraphModule
 
-        - ``vectors`` -- a dictionary, mapping bi-gradings to sparse vectors of coefficients with respect to the basis of ``parent``
+        - ``vectors`` -- a dictionary, mapping gradings to sparse vectors of coefficients with respect to the basis of ``parent``
         """
         if not isinstance(parent, GraphModule_vector):
             raise ValueError("parent must be a GraphModule_vector")
         self._parent = parent
         self._vectors = keydefaultdict(partial(zero_vector, self._parent))
-        for bi_grading in vectors:
-            self._vectors[bi_grading] = vectors[bi_grading]
+        for grading in vectors:
+            self._vectors[grading] = vectors[grading]
 
     def __repr__(self):
         """
         Return a string representation of this graph vector.
         """
         terms = []
-        for (bi_grading, vector) in self._vectors.items():
+        for (grading, vector) in self._vectors.items():
             for (k,c) in vector.items():
-                g, sign = self._parent._graph_basis.key_to_graph(bi_grading + (k,))
+                g, sign = self._parent._graph_basis.key_to_graph(grading + (k,))
                 c *= sign
                 c_str = repr(c)
                 if c_str != '1':
@@ -61,9 +61,9 @@ class GraphVector_vector(GraphVector):
         """
         Facilitates iterating over this graph vector, yielding tuples of the form ``(coeff, graph)``.
         """
-        for (bi_grading, vector) in self._vectors.items():
+        for (grading, vector) in self._vectors.items():
             for (k,c) in vector.items():
-                g, sign = self._parent._graph_basis.key_to_graph(bi_grading + (k,))
+                g, sign = self._parent._graph_basis.key_to_graph(grading + (k,))
                 c *= sign
                 yield (c,g)
 
@@ -150,24 +150,23 @@ class GraphVector_vector(GraphVector):
                 return False
         return True
 
-    def bi_gradings(self):
+    def gradings(self):
         """
-        Return the set of tuples ``(v,e)`` such that this graph vector contains terms with ``v`` vertices and ``e`` edges.
+        Return the set of grading tuples such that this graph vector contains terms with those gradings.
         """
         return set(self._vectors.keys())
 
-    def homogeneous_part(self, vertices, edges):
+    def homogeneous_part(self, *grading):
         """
-        Return the homogeneous part of this graph vector consisting only of terms with the given number of ``vertices`` and ``edges``.
+        Return the homogeneous part of this graph vector consisting only of terms with the given ``grading``.
         """
-        bi_grading = (vertices, edges)
-        return self.__class__(self._parent, { bi_grading : self._vectors[bi_grading]})
+        return self.__class__(self._parent, { grading : self._vectors[grading]})
 
-    def vector(self, vertices, edges):
+    def vector(self, *grading):
         """
-        Return the vector of coefficients of graphs with the given number of ``vertices`` and ``edges``.
+        Return the vector of coefficients of graphs with the given ``grading``.
         """
-        return self._vectors[vertices, edges]
+        return self._vectors[grading]
 
 class GraphModule_vector(GraphModule):
     """
@@ -223,13 +222,15 @@ class GraphModule_vector(GraphModule):
         """
         Convert ``arg`` into an element of this module.
         """
+        # NOTE: assumes basis consists of grading + index, nothing more (e.g. graph complex basis)
+        grading_size = self._graph_basis.grading_size
         if isinstance(arg, self._graph_basis.graph_class):
             key, sign = self._graph_basis.graph_to_key(arg)
             if key is not None:
-                bi_grading = key[:2]
-                index = key[2]
+                grading = key[:grading_size]
+                index = key[grading_size]
                 v = self.zero()
-                v._vectors[bi_grading][index] = self.base_ring().one() * sign
+                v._vectors[grading][index] = self.base_ring().one() * sign
                 return v
             else: # must be zero
                 return self.zero()
@@ -240,9 +241,9 @@ class GraphModule_vector(GraphModule):
                 key, sign = self._graph_basis.graph_to_key(graph)
                 if key is not None:
                     coeff *= sign
-                    bi_grading = key[:2]
-                    index = key[2]
-                    v._vectors[bi_grading][index] += coeff
+                    grading = key[:grading_size]
+                    index = key[grading_size]
+                    v._vectors[grading][index] += coeff
             return v
         elif isinstance(arg, self.element_class) and arg.parent() is self:
             return arg

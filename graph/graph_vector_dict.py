@@ -152,19 +152,21 @@ class GraphVector_dict(GraphVector):
                 return False
         return True
 
-    def bi_gradings(self):
+    def gradings(self):
         """
-        Return the set of tuples ``(v,e)`` such that this graph vector contains terms with ``v`` vertices and ``e`` edges.
+        Return the set of grading tuples such that this graph vector contains terms with those gradings.
         """
-        return set((key[0],key[1]) for key in self._vector)
+        grading_size = self._parent.basis().grading_size
+        return set(key[:grading_size] for key in self._vector)
 
-    def homogeneous_part(self, vertices, edges):
+    def homogeneous_part(self, *grading):
         """
-        Return the homogeneous part of this graph vector consisting only of terms with the given number of ``vertices`` and ``edges``.
+        Return the homogeneous part of this graph vector consisting only of terms with the given ``grading``.
         """
+        grading_size = self._parent.basis().grading_size
         v = {}
         for key in self._vector:
-            if key[:2] == (vertices, edges):
+            if key[:grading_size] == grading:
                 v[key] = self._vector[key]
         return self.__class__(self._parent, v)
 

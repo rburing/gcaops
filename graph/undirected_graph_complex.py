@@ -15,7 +15,7 @@ class UndirectedGraphCochain(GraphCochain, UndirectedGraphVector):
         Return the graph Lie bracket of this graph cochain with ``other``.
         """
         # TODO: optimize
-        return sum((sum(self.homogeneous_part(v,e).insertion(i, other) for i in range(v)) for (v,e) in self.bi_gradings()), self._parent.zero()) + sum(((1 if e % 2 == 1 and f % 2 == 1 else -1)*sum(other.homogeneous_part(v,e).insertion(i, self.homogeneous_part(w,f)) for i in range(v)) for (v,e) in other.bi_gradings() for (w,f) in self.bi_gradings()), self._parent.zero())
+        return sum((sum(self.homogeneous_part(v,e).insertion(i, other) for i in range(v)) for (v,e) in self.gradings()), self._parent.zero()) + sum(((1 if e % 2 == 1 and f % 2 == 1 else -1)*sum(other.homogeneous_part(v,e).insertion(i, self.homogeneous_part(w,f)) for i in range(v)) for (v,e) in other.gradings() for (w,f) in self.gradings()), self._parent.zero())
 
     @abstractmethod
     def _indices_and_coefficients(self, bi_grading):
