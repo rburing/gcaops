@@ -80,7 +80,7 @@ class FormalityGraph:
         """
         Return a vertex relabeling of this graph.
         """
-        if any((v < self._num_ground_vertices) != (w < self._num_ground_vertices) for (v,w) in relabeling.items()):
+        if any((v < self._num_ground_vertices) != (relabeling[v] < self._num_ground_vertices) for v in range(self._num_ground_vertices + self._num_aerial_vertices)):
             raise ValueError('Relabeling must map aerial vertices to aerial vertices')
         new_edges = [(relabeling[a], relabeling[b]) for (a,b) in self._edges]
         return __class__(self._num_ground_vertices, self._num_aerial_vertices, new_edges)
