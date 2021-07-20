@@ -124,7 +124,7 @@ class FormalityGraph:
         from sage.graphs.graph_plot import GraphPlot
         num_vertices = self._num_ground_vertices + self._num_aerial_vertices
         g = DiGraph([list(range(num_vertices)), [(a,b,i) for (i,(a,b)) in enumerate(self.edges())]])
-        ground_pos = { v : [float(v), 0.0] for v in range(self._num_ground_vertices)}
+        ground_pos = { v : [1.0 + float(v), 0.0] for v in range(self._num_ground_vertices)}
         aerial_vertices = range(self._num_ground_vertices, num_vertices)
         vertex_positions = self.get_pos()
         if vertex_positions:
