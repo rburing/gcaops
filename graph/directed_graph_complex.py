@@ -1,15 +1,17 @@
-from .graph_complex import GraphCochain_dict, GraphComplex_dict, GraphCochain_vector, GraphComplex_vector
+from .graph_complex import GraphCochain, GraphComplex
 from .directed_graph_vector import DirectedGraphVector, DirectedGraphModule, DirectedGraphVector_dict, DirectedGraphModule_dict, DirectedGraphVector_vector, DirectedGraphModule_vector
 from .directed_graph_basis import DirectedGraphComplexBasis
-from .undirected_graph_complex import UndirectedGraphCochain
+from .undirected_graph_complex import UndirectedGraphCochain, UndirectedGraphCochain_dict, UndirectedGraphCochain_vector, UndirectedGraphComplex_vector
 from util.misc import keydefaultdict
 from functools import partial
 from abc import abstractmethod
 
-class DirectedGraphCochain(DirectedGraphVector):
+class DirectedGraphCochain(GraphCochain, DirectedGraphVector):
     """
     Cochain of a DirectedGraphComplex.
     """
+    bracket = UndirectedGraphCochain.bracket
+
     @abstractmethod
     def _add_to_coeff_by_index(self, bi_grading, index, summand):
         """
@@ -17,7 +19,7 @@ class DirectedGraphCochain(DirectedGraphVector):
         """
         pass
 
-class DirectedGraphComplex_(DirectedGraphModule):
+class DirectedGraphComplex_(GraphComplex, DirectedGraphModule):
     """
     Directed graph complex.
     """
@@ -38,7 +40,7 @@ class DirectedGraphComplex_(DirectedGraphModule):
         else:
             return super().__call__(arg)
 
-class DirectedGraphCochain_dict(DirectedGraphCochain, DirectedGraphVector_dict, GraphCochain_dict):
+class DirectedGraphCochain_dict(DirectedGraphCochain, DirectedGraphVector_dict):
     """
     Cochain of a DirectedGraphComplex (stored as a dictionary).
     """
@@ -50,13 +52,15 @@ class DirectedGraphCochain_dict(DirectedGraphCochain, DirectedGraphVector_dict, 
             raise ValueError("parent must be a DirectedGraphComplex_dict")
         super().__init__(parent, vector)
 
+    differential = UndirectedGraphCochain_dict.differential
+
     def _add_to_coeff_by_index(self, bi_grading, index, summand):
         """
         Add ``summand`` to the specified coefficient in this graph cochain.
         """
         self._vector[bi_grading + (index,)] += summand
 
-class DirectedGraphComplex_dict(DirectedGraphComplex_, DirectedGraphModule_dict, GraphComplex_dict):
+class DirectedGraphComplex_dict(DirectedGraphComplex_, DirectedGraphModule_dict):
     """
     Directed graph complex (with elements stored as dictionaries).
     """
@@ -74,7 +78,7 @@ class DirectedGraphComplex_dict(DirectedGraphComplex_, DirectedGraphModule_dict,
         """
         return 'Directed graph complex over {} with {}'.format(self._base_ring, self._graph_basis)
 
-class DirectedGraphCochain_vector(DirectedGraphCochain, DirectedGraphVector_vector, GraphCochain_vector):
+class DirectedGraphCochain_vector(DirectedGraphCochain, DirectedGraphVector_vector):
     """
     Cochain of a DirectedGraphComplex (stored as a dictionary of vectors).
     """
@@ -86,13 +90,17 @@ class DirectedGraphCochain_vector(DirectedGraphCochain, DirectedGraphVector_vect
             raise ValueError("parent must be a DirectedGraphComplex_vector")
         super().__init__(parent, vector)
 
+    differential = UndirectedGraphCochain_vector.differential
+
+    is_coboundary = UndirectedGraphCochain_vector.is_coboundary
+
     def _add_to_coeff_by_index(self, bi_grading, index, summand):
         """
         Add ``summand`` to the specified coefficient in this graph cochain.
         """
         self._vectors[bi_grading][index] += summand
 
-class DirectedGraphComplex_vector(DirectedGraphComplex_, DirectedGraphModule_vector, GraphComplex_vector):
+class DirectedGraphComplex_vector(DirectedGraphComplex_, DirectedGraphModule_vector):
     """
     Directed graph complex (with elements stored as dictionaries of vectors).
     """
@@ -107,6 +115,12 @@ class DirectedGraphComplex_vector(DirectedGraphComplex_, DirectedGraphModule_vec
         graph_basis = DirectedGraphComplexBasis(connected=connected, biconnected=biconnected, min_degree=min_degree, loops=loops)
         super().__init__(base_ring, graph_basis, vector_constructor, matrix_constructor)
         self.element_class = DirectedGraphCochain_vector
+        # TODO: load differentials from files
+        self._differentials = keydefaultdict(partial(__class__._differential_matrix, self))
+
+    cohomology_basis = UndirectedGraphComplex_vector.cohomology_basis
+
+    _differential_matrix = UndirectedGraphComplex_vector._differential_matrix
 
     def __repr__(self):
         """
