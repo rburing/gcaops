@@ -107,6 +107,17 @@ class GraphVector(ABC):
         pass
 
     @abstractmethod
+    def nedges(self):
+        """
+        Return the number of edges in each graph in this graph vector.
+
+        ASSUMPTIONS:
+
+        Assumes all graphs in this graph vector have the same number of edges.
+        """
+        pass
+
+    @abstractmethod
     def insertion(self, position, other):
         """
         Return the insertion of ``other`` into this graph vector at the vertex ``position``.
