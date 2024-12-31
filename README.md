@@ -38,3 +38,19 @@ sage: GC.cohomology_basis(4,6)
 ```
 
 Extensive examples of the use of this software are contained in the author's PhD dissertation: [*The action of Kontsevich's graph complex on Poisson structures and star products: an implementation*](https://doi.org/10.25358/openscience-9274).
+
+## Installation in a virtual Python environment (no SageMath installation required)
+
+Create and activate a virtual environment:
+
+    cd /path/to/gcaops-master/
+    python3 -m venv venv_gcaops
+    . venv_gcaops/bin/activate
+
+Install the package in the virtual environment:
+
+    pip install ".[passagemath]"
+
+This automatically installs the modularized parts of the Sage library that are
+needed by the package. (These modularized distributions are provided by
+https://github.com/passagemath.)
