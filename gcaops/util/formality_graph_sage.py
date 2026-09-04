@@ -49,11 +49,11 @@ def formality_graph_generate(num_ground_vertices, num_aerial_vertices, num_edges
             if sorted_out_degrees is not None and tuple(sorted(h.out_degree_sequence())) != sorted_out_degrees:
                 continue
             # Choose sinks
-            possible_sinks = [v for v in h if h.out_degree(v) == 0]
+            possible_sinks = [v for v in h.vertices(sort=True) if h.out_degree(v) == 0]
             # TODO: instead of all combinations, mod out by automorphisms
             seen = []
             for sinks in itertools.combinations(possible_sinks, num_ground_vertices):
-                non_sinks = tuple(v for v in h if not v in sinks)
+                non_sinks = tuple(v for v in h.vertices(sort=True) if not v in sinks)
                 if max_aerial_in_degree is not None and max(h.in_degree(v) for v in non_sinks) > max_aerial_in_degree:
                     continue
                 # Relabel sinks to 0, 1, ...
