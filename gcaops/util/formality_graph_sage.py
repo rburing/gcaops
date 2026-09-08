@@ -1,7 +1,10 @@
 import itertools
 import subprocess
 import os
-import sage.all # make SageMath work when called from Python
+try:
+    import sage.all # make SageMath work when called from Python
+except ImportError:
+    import sage.all__sagemath_graphs
 from sage.env import SAGE_NAUTY_BINS_PREFIX
 from sage.graphs.digraph import DiGraph
 from gcaops.graph.formality_graph import FormalityGraph
